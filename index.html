@@ -149,6 +149,24 @@ main.has-cta{padding-bottom:calc(140px + env(safe-area-inset-bottom,0px))}
 .ta:focus{border-color:var(--primary)}
 .qa{margin-top:20px;padding-bottom:20px;border-bottom:1px solid var(--grey-100)}
 .qa .body1{margin-top:4px}
+.aiq{margin-top:12px;font-size:20px;line-height:31px;font-weight:600;letter-spacing:-0.02em;white-space:pre-wrap;min-height:62px}
+.aiq.wait,.report .wait{color:var(--grey-400);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.45}}
+.field{display:block;width:100%;height:56px;margin-top:24px;padding:0 16px;border-radius:16px;border:1.5px solid var(--grey-200);font:inherit;font-size:17px;outline:none}
+.field:focus{border-color:var(--primary)}
+.btn:disabled{background:var(--grey-200);color:var(--grey-500);transform:none}
+.appbar .right:disabled{color:var(--grey-300)}
+.ta:disabled{background:var(--grey-50)}
+.err{margin-top:12px;padding:12px 14px;border-radius:12px;background:#FDECEC;color:var(--grey-800);font-size:15px;line-height:24px}
+.err .text-btn{height:32px;padding:0 6px;color:var(--danger)}
+.safety{margin-top:12px;padding:16px;border-radius:16px;background:var(--primary-subtle)}
+.safety b{font-size:15px}.safety p{margin-top:4px;font-size:15px;line-height:24px;color:var(--grey-800)}
+.safety a{color:var(--primary);font-weight:700}
+.log{margin-top:28px}.log summary{font-size:15px;color:var(--grey-600);cursor:pointer;padding:8px 0}
+.report{margin-top:20px}
+.report h3{font-size:17px;line-height:27px;font-weight:600;margin-top:24px}
+.report p,.report li{font-size:15px;line-height:25px;color:var(--grey-800);margin-top:6px}
+.report ul{padding-left:18px}
 .disclaimer{margin-top:40px;padding:16px;border-radius:16px;background:var(--grey-50);color:var(--grey-600);font-size:13px;line-height:20px}
 .toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);opacity:0;
   background:var(--grey-800);color:#fff;font-size:15px;padding:12px 18px;border-radius:14px;transition:opacity .2s,transform .2s;z-index:30;white-space:nowrap}
@@ -501,11 +519,16 @@ function render(){
   if(p==='/q') html=Question();
   else if(p==='/result') html=Result(q);
   else if(p==='/reflect') html=Reflect(q);
+  else if(p==='/deep') html=Deep(q);
+  else if(p==='/key') html=KeyScreen(q);
   else html=Landing();
   $app.innerHTML=`<div class="scr ${changed?ui.dir:''}">${html}</div>`;
   if(changed) scrollTo(0,0);
   ui.dir=null;
   bind();
+  if(p==='/deep'&&localStorage.getItem(KEYSTORE)){const k=q.get('k'),D=deepState(k);
+    if(q.get('v')==='report'){if(!D.report)runDeep(k,'report');}
+    else if(D.msgs.length===0||D.msgs[D.msgs.length-1].role==='user')runDeep(k);}
   if(ui.reveal){requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.bar>i[data-w]').forEach(b=>b.style.width=b.dataset.w+'%')));ui.reveal=false;}
   else document.querySelectorAll('.bar>i[data-w]').forEach(b=>{b.style.transition='none';b.style.width=b.dataset.w+'%';});
 }
@@ -611,7 +634,8 @@ function Result(q){
       const R=(S.reflect||{})[mine.at]||{};
       reflect=`<section class="section"><h2 class="title2">왜 이런 내가 됐을까요?</h2><p class="caption sub">상담가가 묻듯이 질문을 이어 갈게요. 답하다 보면 이 성향이 생긴 이유가 보여요. 답은 이 휴대폰에만 저장돼요.</p>
         <div class="rlist">${top.slice(0,3).map(([k,v])=>{const n=(R[k]||[]).filter(Boolean).length;
-          return `<button class="rrow" data-act="reflect" data-k="${k}"><div><b>${SUBNAME[k]} <span class="caption weak">${v}</span></b><p>${firstSentence(FT[k][FI[flv(v)]])}</p></div><span class="rstat ${n?'on':''}">${n?`${n}/${RQ.length}`:'시작'}</span></button>`;}).join('')}</div></section>`;
+          const dd=((S.deep||{})[mine.at]||{})[k];const dn=dd?dd.msgs.filter(x=>x.role==='user').length-1:0;
+          return `<button class="rrow" data-act="${dn>0?'deep':'reflect'}" data-k="${k}"><div><b>${SUBNAME[k]} <span class="caption weak">${v}</span></b><p>${firstSentence(FT[k][FI[flv(v)]])}</p></div><span class="rstat ${n||dn>0?'on':''}">${dn>0?`AI ${dn}번`:n?`${n}/${RQ.length}`:'시작'}</span></button>`;}).join('')}</div></section>`;
       tips=`<section class="section"><h2 class="title2">이번 주에 해볼 것</h2><p class="caption sub">상대적으로 약한 세부 척도에 맞췄어요.</p><div class="tips">${pickTips(subs).map(t=>`<div class="tip"><b>${TIPNAME[t.k]||t.name+' 키우기'}</b><p>${t.text}</p></div>`).join('')}</div></section>`;
     }
   }
@@ -661,7 +685,7 @@ function Reflect(q){
       <p class="body2 sub" style="margin-top:28px">적은 답을 다시 읽어 보세요. 3번째·4번째 답(왜·왜)과 5번째 답(언제부터)이 이어지는 지점에 이 성향의 이유가 숨어 있는 경우가 많아요.</p>
       <button class="text-btn" data-act="reflect" data-k="${k}" style="width:100%;margin-top:12px">처음부터 다시 답하기</button>
     </main>
-    <div class="cta"><button class="btn" data-act="copyref" data-k="${k}">기록 복사하기</button><p class="note">노트 앱에 붙여 넣어 보관할 수 있어요</p></div>`;
+    <div class="cta"><button class="text-btn" data-act="copyref" data-k="${k}">기록 복사하기</button><button class="btn" data-act="deep" data-k="${k}">AI와 더 깊이 들어가기</button><p class="note">AI가 내 답을 듣고 이어서 물어요</p></div>`;
   }
   const n=Math.max(0,Math.min(RQ.length-1,+i||0)),r=RQ[n];
   let quote='';
@@ -683,12 +707,173 @@ function Reflect(q){
 }
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
+/* ───────── AI 이어 묻기 (단계 1: 다혜 개인 키, 이 기기에만 저장) ───────── */
+const KEYSTORE='tci7-apikey';
+const MODEL='claude-opus-5-5';
+const PRICE={i:4,cw:5,cr:0.2,o:20}; // $/1M 토큰 (Opus 5.5 표 기준, 캐시 쓰기는 입력의 1.25배로 추정)
+let _client=null;
+async function claude(){
+  if(_client) return _client;
+  const {default:Anthropic}=await import('https://esm.sh/@anthropic-ai/sdk@1.3.0');
+  _client=new Anthropic({apiKey:localStorage.getItem(KEYSTORE),dangerouslyAllowBrowser:true});
+  return _client;
+}
+const RISK=/죽고\s*싶|자살|자해|목숨|사라지고\s*싶|살기\s*싫|없어지고\s*싶/;
+function deepState(k){
+  const m=S.history[0];S.deep=S.deep||{};const R=S.deep[m.at]=S.deep[m.at]||{};
+  return R[k]=R[k]||{msgs:[],usage:{i:0,o:0,cr:0,cw:0},report:null};
+}
+const textOf=c=>typeof c==='string'?c:(c||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+const costOf=u=>(u.i*PRICE.i+u.cw*PRICE.cw+u.cr*PRICE.cr+u.o*PRICE.o)/1e6;
+function systemPrompt(k){
+  const m=S.history[0],v=m.subs[k];
+  const facets=SUBKEYS.map(x=>`${DIMS[SUBDIM[x]].name} > ${SUBNAME[x]}: ${m.subs[x]}`).join('\n');
+  const fixed=(((S.reflect||{})[m.at]||{})[k]||[]).map((a,j)=>a?`Q. ${RQ[j].q}\nA. ${a}`:'').filter(Boolean).join('\n\n')||'(없음)';
+  return `당신은 사용자가 자기 성향이 "왜" 생겼는지 스스로 찾도록 돕는 따뜻하고 숙련된 상담가식 안내자예요. 치료자나 의사가 아니고, 진단하지 않아요.
+
+## 사용자 검사 결과 (Cloninger 기질·성격 7요인 모델, IPIP 문항 87개 자가검사, 0~100은 응답 비율이지 규준 점수가 아님)
+7개 차원: ${Object.keys(DIMS).map(x=>`${DIMS[x].name} ${m.dims[x]}`).join(', ')}
+세부 척도 29개:
+${facets}
+
+## 이번에 들여다볼 성향
+${SUBNAME[k]} (${DIMS[SUBDIM[k]].name}의 세부 척도) ${v}점 — "${FT[k][FI[flv(v)]]}"
+
+## 사용자가 이미 고정 질문에 답한 것 (같은 걸 다시 묻지 마세요)
+${fixed}
+
+## 대화 방식
+- 한 번에: 사용자의 말을 짧게 비춰 주는 한 문장 + 열린 질문 정확히 하나. 전체 3문장 이내. 목록·제목·굵은 글씨 금지.
+- 사용자의 실제 표현을 따옴표로 다시 써서, 내 말을 듣고 있다는 걸 느끼게 해요.
+- 한 단계씩 더 깊이 들어가요: 구체적 장면 → 그때의 감정 → 그 밑의 바람·가치("그게 왜 중요해요?"를 표현을 바꿔 가며) → 뿌리(언제부터, 가족·학교·첫 직장에서 무엇이 칭찬받고 무엇이 혼났는지) → 이 성향이 나를 어떻게 지켜 줬는지 → 그 대가 → 남기고 싶은 것과 바꾸고 싶은 것.
+- 기질은 타고나서 잘 안 바뀌고, 성격(자율성·연대감·자기초월)은 경험으로 자란다는 크로닝거의 관점을 쉬운 말로 써요. 세 번에 한 번쯤은 답과 점수를 잇는 가설을 질문 형태로 조심스럽게 건네요. 예: "즉흥성이 높은데, 말씀하신 '놓치면 다시 안 온다'는 마음이 그 속도를 더 키웠을 수도 있겠어요. 어떻게 느껴져요?"
+- 답이 짧거나 막히면 더 쉬운 질문으로 바꾸거나 예시 두 개를 들어 줘요.
+- 조언·해결책·평가는 하지 않아요. 판단 없이 궁금해해요.
+- 열 번쯤 주고받았거나 핵심 이유가 드러났다면, 여기서 정리해 볼지 물어봐요.
+- 한국어 해요체, 쉬운 말. 전문 용어는 꼭 필요할 때만 풀어서.
+
+## 안전
+자해·자살·학대·당장의 위험 신호가 보이면 탐색을 멈추고 따뜻하게 마음을 받아 준 뒤, 109(자살예방 상담전화, 24시간), 1577-0199(정신건강위기상담), 위급하면 112·119를 안내해요. 그 턴에는 왜 질문을 하지 않아요.`;
+}
+async function deepTurn(k,extra){
+  const D=deepState(k),c=await claude();
+  const stream=c.beta.messages.stream({
+    model:MODEL,max_tokens:16000,
+    betas:['server-side-fallback-2026-07-01'],fallbacks:'default',
+    output_config:{effort:extra==='report'?'medium':'low'},
+    cache_control:{type:'ephemeral'},
+    system:systemPrompt(k),
+    messages:D.msgs
+  });
+  const el=()=>document.getElementById('aiq');
+  let acc='';
+  for await(const ev of stream){
+    if(ev.type==='content_block_delta'&&ev.delta.type==='text_delta'){acc+=ev.delta.text;const e=el();if(e){e.classList.remove('wait');e.textContent=acc;}}
+  }
+  const fin=await stream.finalMessage();
+  const u=fin.usage||{};D.usage.i+=u.input_tokens||0;D.usage.o+=u.output_tokens||0;D.usage.cr+=u.cache_read_input_tokens||0;D.usage.cw+=u.cache_creation_input_tokens||0;
+  if(fin.stop_reason==='refusal'){D.msgs.pop();save();throw Object.assign(new Error('refusal'),{refusal:true});}
+  D.msgs.push({role:'assistant',content:fin.content});
+  save();
+  return textOf(fin.content);
+}
+function errMsg(e){
+  if(e.refusal) return '이 대화는 AI가 이어 가기 어려워요. 마음이 힘들다면 109(24시간)로 이야기해 보세요.';
+  const s=e.status;
+  if(s===401) return 'API 키가 맞지 않아요. 키를 다시 확인해 주세요.';
+  if(s===429) return '요청이 많아요. 잠시 뒤에 다시 눌러 주세요.';
+  if(s>=500) return 'AI 쪽이 잠시 불안정해요. 다시 눌러 주세요.';
+  return '연결이 안 됐어요. 인터넷을 확인하고 다시 눌러 주세요.';
+}
+const SAFETY=`<div class="safety"><b>지금 많이 힘드신가요?</b><p>혼자 견디지 않아도 돼요. <a href="tel:109">109</a>(자살예방 상담, 24시간), <a href="tel:15770199">1577-0199</a>(정신건강위기상담)에 전화하면 바로 이야기를 들어 줘요. 위급하면 112·119예요.</p></div>`;
+function md(t){
+  return esc(t).split('\n').map(l=>{
+    if(/^#{1,3} /.test(l)) return `<h3>${l.replace(/^#+ /,'')}</h3>`;
+    if(/^[-*] /.test(l)) return `<li>${l.slice(2)}</li>`;
+    if(/^&gt; /.test(l)) return `<div class="quote">${l.slice(5)}</div>`;
+    return l.trim()?`<p>${l}</p>`:'';
+  }).join('').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/(<li>.*?<\/li>)+/g,m=>`<ul>${m}</ul>`);
+}
+function KeyScreen(q){
+  const has=!!localStorage.getItem(KEYSTORE);
+  return `<div class="appbar"><button class="icon-btn" data-act="home" aria-label="뒤로">${ICON.back}</button></div>
+  <main>
+    <h1 class="title1" tabindex="-1" style="margin-top:8px">Claude API 키를 넣어 주세요</h1>
+    <p class="body2 sub" style="margin-top:8px">AI가 답을 듣고 이어 묻는 데 써요. 키는 이 휴대폰 브라우저에만 저장되고, Anthropic API 말고는 어디로도 보내지 않아요.</p>
+    <input class="field" id="keyin" type="password" autocomplete="off" placeholder="sk-ant-..." value="">
+    <p class="caption weak" style="margin-top:8px">${has?'저장된 키가 있어요. 새로 넣으면 바뀌어요.':'Claude 콘솔의 API Keys에서 만들 수 있어요.'} 대화 한 번(10~15번 주고받기)에 보통 수백 원 정도 들어요.</p>
+    <button class="btn" data-act="savekey" data-k="${q.get('k')||''}" style="margin-top:20px">저장하기</button>
+    ${has?`<button class="text-btn" data-act="delkey" style="width:100%;margin-top:8px">저장된 키 지우기</button>`:''}
+  </main>`;
+}
+function Deep(q){
+  const m=S.history[0],k=q.get('k');if(!m||!m.subs||!FT[k])return Landing();
+  if(!localStorage.getItem(KEYSTORE)){history.replaceState(null,'','#/key?k='+k);return KeyScreen(new URLSearchParams('k='+k));}
+  const D=deepState(k);
+  if(q.get('v')==='report'){
+    return `<div class="appbar"><button class="icon-btn" data-act="todeep" data-k="${k}" aria-label="대화로">${ICON.back}</button></div>
+    <main class="has-cta"><p class="body2 sub">${SUBNAME[k]} 들여다보기</p><h1 class="title1" tabindex="-1" style="margin-top:4px">이렇게 정리했어요</h1>
+      <div class="report" id="aiq">${D.report?md(D.report):'<p class="wait">대화를 다시 읽고 정리하고 있어요</p>'}</div>
+      <p class="caption weak" style="margin-top:24px">이번 대화 비용(추정) $${costOf(D.usage).toFixed(3)} · 입력 ${D.usage.i+D.usage.cr+D.usage.cw} 토큰 · 출력 ${D.usage.o} 토큰</p>
+      <button class="text-btn" data-act="todeep" data-k="${k}" style="width:100%;margin-top:12px">대화 더 이어 가기</button>
+    </main>
+    <div class="cta"><button class="btn" data-act="copydeep" data-k="${k}" ${D.report?'':'disabled'}>리포트 복사하기</button></div>`;
+  }
+  const turns=D.msgs.filter(x=>x.role==='assistant');
+  const last=turns[turns.length-1];
+  const pending=D.msgs.length===0||D.msgs[D.msgs.length-1].role==='user';
+  const userAns=D.msgs.filter(x=>x.role==='user').slice(1);
+  const prev=userAns.length?textOf(userAns[userAns.length-1].content):'';
+  const risky=userAns.some(x=>RISK.test(textOf(x.content)));
+  const log=turns.slice(0,-1).map((a,j)=>`<div class="qa"><p class="caption weak">${esc(textOf(a.content))}</p><p class="body2">${esc(textOf((userAns[j]||{}).content))}</p></div>`).join('');
+  return `<div class="appbar"><button class="icon-btn" data-act="toresult" aria-label="결과로">${ICON.back}</button>
+      <span class="caption weak num" style="margin-left:4px">AI와 들여다보기 · ${Math.max(1,turns.length+(pending?1:0))}번째</span>
+      <button class="right" data-act="deepreport" data-k="${k}" ${userAns.length>=3?'':'disabled'}>정리하기</button></div>
+    <main class="q-wrap">
+      <p class="q-label">${SUBNAME[k]} 들여다보기</p>
+      ${risky?SAFETY:''}
+      ${prev?`<div class="quote">${esc(prev.length>80?prev.slice(0,80)+'…':prev)}</div>`:''}
+      <p class="aiq ${pending?'wait':''}" id="aiq" tabindex="-1">${pending?'답을 읽고 있어요':esc(textOf(last.content))}</p>
+      <div id="derr"></div>
+      <textarea class="ta" id="dta" rows="5" placeholder="떠오르는 대로 적어 보세요" ${pending?'disabled':''}></textarea>
+      <button class="btn" data-act="deepsend" data-k="${k}" id="dsend" style="margin-top:16px" disabled>답하기</button>
+      <p class="caption weak" style="margin-top:12px">세 번 이상 답하면 오른쪽 위 '정리하기'로 리포트를 만들 수 있어요.</p>
+      ${log?`<details class="log"><summary>지금까지 대화 보기</summary>${log}</details>`:''}
+      <div style="height:40px"></div>
+    </main>`;
+}
+async function runDeep(k,mode){
+  if(ui.busy)return;ui.busy=true;
+  const D=deepState(k);
+  try{
+    if(mode==='report'){
+      D.msgs.push({role:'user',content:'[정리 요청] 지금까지 대화를 바탕으로 정리 리포트를 써 주세요. 형식: "## 한 줄로" / "## 이 성향이 생긴 이유 (가설)" / "## 이 성향이 지켜 준 것" / "## 그 대가" / "## 기질과 성격으로 보면" / "## 앞으로 해볼 것 한 가지". 각 절은 2~4문장, 사용자가 한 말을 "> " 인용으로 한두 번 넣어요. 이유는 단정하지 말고 가설로 써요. 진단·처방 표현 금지, 해요체, 전체 700자 안팎.'});
+      save();
+      D.report=await deepTurn(k,'report');save();
+    } else {
+      if(D.msgs.length===0){D.msgs.push({role:'user',content:'시작해 주세요.'});save();}
+      await deepTurn(k);
+    }
+  }catch(e){
+    const q0=document.getElementById('aiq');if(q0&&mode!=='report'&&q0.classList.contains('wait')){q0.classList.remove('wait');q0.textContent='질문을 불러오지 못했어요';}
+    const box=document.getElementById('derr');
+    if(box) box.innerHTML=`<div class="err">${errMsg(e)} <button class="text-btn" data-act="deepretry" data-k="${k}" data-m="${mode||''}">다시 하기</button>${e.status===401?` <button class="text-btn" data-act="tokey" data-k="${k}">키 바꾸기</button>`:''}</div>`;
+    else if(mode==='report'){const r=document.getElementById('aiq');if(r)r.innerHTML=`<div class="err">${errMsg(e)} <button class="text-btn" data-act="deepretry" data-k="${k}" data-m="report">다시 하기</button></div>`;}
+    if(mode==='report'&&D.msgs.length&&D.msgs[D.msgs.length-1].role==='user'){D.msgs.pop();save();}
+    ui.busy=false;bind();return;
+  }
+  ui.busy=false;
+  if(route().p==='/deep')render();
+}
+
 /* ───────── 동작 ───────── */
 let answering=false;
 function bind(){
   ui.revealCard=false;ui.stDir=null;
   $app.querySelectorAll('[data-act]').forEach(el=>el.addEventListener('click',()=>act(el.dataset.act,el)));
   $app.querySelectorAll('.choice').forEach(el=>el.addEventListener('click',()=>pick(el)));
+  const dta=$app.querySelector('#dta');
+  if(dta){const b=$app.querySelector('#dsend');dta.addEventListener('input',()=>{b.disabled=!dta.value.trim()||ui.busy;});}
   const ta=$app.querySelector('#ta');
   if(ta){const btn=$app.querySelector('#rnext');ta.addEventListener('input',()=>{btn.textContent=ta.value.trim()?'다음':'건너뛰기';saveRef(btn.dataset.k,+btn.dataset.i);});}
 }
@@ -708,6 +893,17 @@ function act(a,el){
   else if(a==='rnext'){const k=el.dataset.k,n=+el.dataset.i;saveRef(k,n);go(`/reflect?k=${k}&i=${n+1>=RQ.length?'done':n+1}`);}
   else if(a==='rback'){saveRef(el.dataset.k,+el.dataset.i);goBack('/result');}
   else if(a==='copyref'){copyRef(el.dataset.k);}
+  else if(a==='deep'){go(`/deep?k=${el.dataset.k}`);}
+  else if(a==='todeep'){go(`/deep?k=${el.dataset.k}`);}
+  else if(a==='tokey'){go(`/key?k=${el.dataset.k}`);}
+  else if(a==='savekey'){const v=$app.querySelector('#keyin').value.trim();if(!v.startsWith('sk-'))return toast('키 형식을 확인해 주세요');localStorage.setItem(KEYSTORE,v);_client=null;toast('키를 저장했어요');const k=el.dataset.k;if(k){history.replaceState(null,'','#/deep?k='+k);ui.last=null;render();}else goBack('/');}
+  else if(a==='delkey'){localStorage.removeItem(KEYSTORE);_client=null;toast('키를 지웠어요');render();}
+  else if(a==='deepsend'){const k=el.dataset.k,ta=$app.querySelector('#dta'),t=ta.value.trim();if(!t||ui.busy)return;
+    const D=deepState(k);D.msgs.push({role:'user',content:t});save();ui.last=location.hash;render();}
+  else if(a==='deepreport'){go(`/deep?k=${el.dataset.k}&v=report`);}
+  else if(a==='deepretry'){const b=$app.querySelector('#derr');if(b)b.innerHTML='';runDeep(el.dataset.k,el.dataset.m||undefined);}
+  else if(a==='copydeep'){const k=el.dataset.k,D=deepState(k);const t=`## ${SUBNAME[k]} — AI와 들여다보기 (${new Date().toLocaleDateString('ko-KR')})\n\n${D.report}\n\n### 대화\n`+D.msgs.slice(1).filter(x=>!/^\[정리 요청\]/.test(textOf(x.content))).map(x=>(x.role==='assistant'?'**Q.** ':'A. ')+textOf(x.content)).join('\n\n');
+    navigator.clipboard.writeText(t).then(()=>toast('리포트를 복사했어요')).catch(()=>prompt('복사해 주세요',t));}
 }
 function rerenderQ(){
   const html=Question();const tmp=document.createElement('div');tmp.innerHTML=html;
