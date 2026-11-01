@@ -116,6 +116,24 @@ main.has-cta{padding-bottom:calc(140px + env(safe-area-inset-bottom,0px))}
 .tip{padding:18px;border-radius:16px;background:var(--grey-50)}
 .tip b{display:block;font-size:15px;line-height:24px}
 .tip p{margin-top:4px;font-size:15px;line-height:24px;color:var(--grey-700)}
+.card{padding:20px;border-radius:20px;background:var(--grey-50)}
+.card .label{font-size:13px;line-height:19px;font-weight:600;color:var(--grey-500)}
+.tip span.caption{display:block;margin-top:2px}
+.feats{margin-top:8px}
+.feat{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--grey-100)}
+.feat:last-child{border-bottom:0}
+.feat .score{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:15px}
+.feat .score.hi{background:var(--primary-subtle);color:var(--primary)}
+.feat .score.lo{background:var(--grey-100);color:var(--grey-700)}
+.feat b{font-size:17px;line-height:27px;font-weight:600}
+.feat p{margin-top:2px;font-size:15px;line-height:24px;color:var(--grey-700)}
+.situ h3{font-size:17px;line-height:27px;font-weight:600;margin-top:20px}
+.situ ul{list-style:none;margin-top:8px;display:flex;flex-direction:column;gap:8px}
+.situ li{position:relative;padding-left:14px;font-size:15px;line-height:24px;color:var(--grey-800)}
+.situ li:before{content:'';position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--grey-400)}
+.facet p{margin-top:4px;font-size:13px;line-height:20px;color:var(--grey-600)}
+.subs{gap:16px}
+.diverge{margin-top:16px;padding:12px 14px;border-radius:12px;background:#fff;font-size:13px;line-height:20px;color:var(--grey-700)}
 .disclaimer{margin-top:40px;padding:16px;border-radius:16px;background:var(--grey-50);color:var(--grey-600);font-size:13px;line-height:20px}
 .toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);opacity:0;
   background:var(--grey-800);color:#fff;font-size:15px;padding:12px 18px;border-radius:14px;transition:opacity .2s,transform .2s;z-index:30;white-space:nowrap}
@@ -225,15 +243,146 @@ const TYPES = {
   'LLL':['침착한 독립형','차분하고 걱정이 적어요. 흔들림 없이 내 속도로 가요.'],
   'LLH':['다정한 안정형','편안하고 믿음직해요. 사람들 곁에서 조용히 힘이 되어 줘요.']
 };
-const TIPS = {
-  SD:['자율성 키우기','이번 주에 끝낼 수 있는 아주 작은 목표 하나를 정하고, 해낸 날을 기록해 보세요. 작은 성공이 쌓이면 스스로를 믿는 힘이 자라요.'],
-  C:['연대감 키우기','나와 생각이 다른 사람의 말을 하루 한 번, 끝까지 들어 보세요. 동의하지 않아도 이해하려는 연습만으로 관계가 달라져요.'],
-  ST:['자기초월 키우기','휴대폰 없이 20분 동안 걷거나 한 가지 일에만 몰두해 보세요. 몰입하는 시간이 마음에 여유를 만들어 줘요.'],
-  HA:['걱정 다루기','걱정이 들면 "최악·최선·가장 그럴듯한 결과"를 한 줄씩 적어 보세요. 막연한 불안이 구체적인 계획으로 바뀌어요.'],
-  NS:['충동 다루기','바로 하고 싶은 게 생기면 하루만 기다려 보세요. 다음 날에도 하고 싶다면 그때 해도 늦지 않아요.'],
-  P:['꾸준함 만들기','큰 목표를 10분짜리 단위로 쪼개 보세요. 시작이 쉬우면 끝까지 가기도 쉬워요.'],
-  RD:['나를 지키는 관계','부탁을 받으면 바로 답하지 말고 "생각해 보고 알려줄게"라고 말해 보세요. 거절도 관계를 지키는 방법이에요.']
+
+/* ───────── 세부 척도 해석 [높음, 보통, 낮음] ───────── */
+const FT = {
+ NS1:['같은 일상이 이어지면 금방 지루해져요. 새 장소·새 방법을 찾는 게 에너지원이에요.','익숙한 것과 새로운 것을 적당히 섞을 때 가장 편해요.','검증된 방식과 익숙한 환경에서 실력을 발휘해요. 변화는 이유가 분명할 때만 받아들여요.'],
+ NS2:['끌리면 바로 움직여요. 기회를 빨리 잡지만, 정보가 다 모이기 전에 정할 때가 있어요.','평소엔 생각하고 움직이지만, 마음이 크게 끌리면 즉흥적으로 정하기도 해요.','한 번 더 생각하고 움직여요. 실수가 적은 대신 타이밍을 놓칠 때가 있어요.'],
+ NS3:['사고 싶은 게 생기면 지르는 편이에요. 경험에 돈을 아끼지 않지만 예산을 넘기기 쉬워요.','대체로 계획 안에서 쓰지만, 가끔 기분에 따라 크게 써요.','감당할 수 있는 만큼만 써요. 돈 관리가 안정적이에요.'],
+ NS4:['납득되지 않는 규칙이나 지시는 따르지 않아요. 관행을 깨는 힘이 있지만 조직에서 마찰이 생길 수 있어요.','규칙은 대체로 지키지만, 말이 안 되는 규칙에는 문제를 제기해요.','규칙과 질서를 존중해요. 조직에서 믿고 맡길 수 있는 사람이에요.'],
+ HA1:['최악의 경우를 먼저 떠올리고 스트레스를 쉽게 받아요. 위험 대비는 잘하지만 마음이 쉽게 지쳐요.','걱정할 일엔 걱정하지만, 오래 끌고 가지는 않아요.','대부분 마음이 편해요. 압박 속에서도 차분하지만, 경고 신호를 가볍게 넘길 수 있어요.'],
+ HA2:['몸이나 돈이 걸린 위험은 확실히 피해요. 크게 손해 볼 일이 적어요.','계산된 위험은 감수하지만 무모한 도박은 하지 않아요.','위험을 감수하는 데 거리낌이 없어요. 큰 기회를 잡을 수도, 크게 잃을 수도 있어요.'],
+ HA3:['낯선 사람 앞에서 조용해지고, 먼저 다가가기가 어려워요. 친해지면 달라지는 타입이에요.','처음엔 조금 조심스럽지만 금방 적응해요.','낯선 사람 사이에서도 편안해요. 새 모임이나 네트워킹이 부담스럽지 않아요.'],
+ HA4:['일이 한꺼번에 몰리면 감당이 안 된다고 느끼고, 누군가의 안심이 필요해요.','보통은 버티지만, 일이 많이 겹치면 흔들려요.','좌절해도 금방 털고 일어나요. 여러 일을 동시에 굴리는 데 강해요.'],
+ RD1:['남의 아픔이 내 일처럼 느껴져요. 따뜻하지만 감정 소모가 커요.','공감은 하되 감정에 휩쓸리진 않아요.','감정에 덜 흔들려요. 어려운 상황에서 냉정하게 판단할 수 있어요.'],
+ RD2:['처음 만난 사람과도 금방 가까워져요. 사람을 모으고 잇는 역할을 잘해요.','편한 사람들과는 잘 지내지만, 새 관계를 적극적으로 넓히진 않아요.','사람들과 일정한 거리를 둬요. 관계는 좁고 깊은 편이에요.'],
+ RD3:['감정과 걱정을 솔직하게 나눠요. 주변에서 속을 알기 쉬운 사람이에요.','믿는 사람에게만 속마음을 꺼내요.','감정을 속에 담아 둬요. 혼자 정리하는 게 편하지만, 주변에선 속을 모르겠다고 느낄 수 있어요.'],
+ RD4:['모두를 만족시키려 하고 다른 사람 뜻에 맞추는 편이에요. 거절이 어려워요.','남의 의견을 존중하지만, 중요한 건 내 뜻대로 해요.','남의 시선에 크게 신경 쓰지 않아요. 내 판단대로 움직여요.'],
+ P1:['할 일은 미루지 않고 바로 시작해요.','중요한 일은 바로 하지만, 하기 싫은 일은 조금 미뤄요.','시작이 가장 어려워요. 마감 직전에 몰아서 하는 편일 수 있어요.'],
+ P2:['어려운 일도 받아들이고 끝까지 마무리해요.','대부분 끝내지만, 의미가 없다 싶으면 중간에 멈춰요.','어려워지면 손을 놓기 쉬워요. 시작한 일보다 끝낸 일이 적을 수 있어요.'],
+ P3:['완벽해질 때까지 붙들고, 최고가 되고 싶어 해요. 결과의 질이 높지만 스스로를 몰아붙이기 쉬워요.','잘하고 싶지만, 적당한 선에서 만족할 줄 알아요.','1등보다 내 페이스가 중요해요. 경쟁에 덜 휘둘리지만 동기가 약해질 수 있어요.'],
+ P4:['기대받는 것보다 더 해요. 일을 많이, 성실하게 해내요.','해야 할 만큼은 성실하게 해요.','딱 필요한 만큼만 해요. 에너지를 아끼지만 덜 성실해 보일 수 있어요.'],
+ SD1:['지금 삶을 즐길 줄 알아요. 손해 본다는 느낌이 적어요.','대체로 만족하지만, 가끔 억울하거나 무기력할 때가 있어요.','요즘 손해 보는 느낌이나 아무것도 하기 싫은 마음이 자주 들어요. 쉬어 가라는 신호일 수 있어요.'],
+ SD2:['원하는 게 분명하고, 계속 나아지고 있다고 느껴요.','방향은 대략 있지만, 구체적인 목표는 흐릴 때가 있어요.','내 삶이 어디로 가는지 모르겠다고 느껴요. 목표를 다시 세울 때예요.'],
+ SD3:['복잡한 문제도 정면으로 마주하고 풀어요. 위기에서 믿음직해요.','대부분의 문제는 해결하지만, 크게 막히면 낙담하기도 해요.','문제 앞에서 쉽게 낙담해요. 작은 문제부터 풀어 보는 경험이 필요해요.'],
+ SD4:['남을 경쟁자로 보지 않고, 일어나는 일을 있는 그대로 받아들여요.','가끔 남과 비교하지만 크게 휘둘리진 않아요.','남과 비교하고 앞서고 싶은 마음이 커요. 동기는 되지만 쉽게 지쳐요.'],
+ SD5:['유혹을 이기고 계획대로 실행해요. 결심이 행동으로 이어져요.','대체로 계획을 지키지만, 가끔 후회할 선택을 해요.','결심과 행동 사이에 틈이 커요. 의지보다 환경을 바꾸는 게 효과적이에요.'],
+ C1:['사람을 있는 그대로 받아들이고, 문제를 여러 각도로 봐요.','대체로 너그럽지만, 내 기준에 어긋나면 판단이 빨라져요.','사람과 상황을 빠르게 판단해요. 기준이 분명하지만 엄격해 보일 수 있어요.'],
+ C2:['남의 감정이 그대로 느껴지고, 필요한 걸 미리 알아차려요.','가까운 사람의 감정은 잘 읽지만, 모두에게 그렇진 않아요.','남의 감정을 읽는 데 에너지가 들어요. 말로 직접 들어야 알아요.'],
+ C3:['사람을 믿고, 남에게 도움이 되는 걸 좋아해요.','믿을 만한 사람은 기꺼이 도와줘요.','사람을 쉽게 믿지 않고, 내 일에 집중해요.'],
+ C4:['상처를 오래 품지 않고 용서하려 해요.','용서는 하지만 쉽게 잊지는 않아요.','상처를 오래 기억하고, 받은 만큼 돌려주고 싶어요.'],
+ C5:['양심과 정의를 중요하게 여기고, 수단도 정당해야 한다고 생각해요.','원칙을 지키려 하지만 상황에 따라 유연하게 판단해요.','결과가 중요하면 수단은 유연하게 봐요. 실용적이지만 신뢰를 잃을 위험이 있어요.'],
+ ST1:['한번 빠지면 시간 가는 줄 모르고, 상상력이 풍부해요.','좋아하는 일엔 몰입하지만, 보통은 현실에 발을 딛고 있어요.','생각에 깊이 잠기기보다 지금 할 일에 집중해요.'],
+ ST2:['남들이 지나치는 것에서 아름다움과 의미를 찾아요.','가끔 깊은 의미를 생각하지만 쓸모도 챙겨요.','의미보다 쓸모를 먼저 봐요.'],
+ ST3:['설명되지 않는 것에도 마음이 열려 있고, 세상과 이어져 있다고 느껴요.','증명된 것을 믿지만, 모르는 영역도 있다고 인정해요.','눈에 보이고 증명되는 것만 믿어요. 비판적 사고가 강해요.']
 };
+const SUBKEYS = Object.values(DIMS).flatMap(d=>Object.keys(d.subs));
+const SUBNAME = Object.fromEntries(Object.values(DIMS).flatMap(d=>Object.entries(d.subs)));
+const SUBDIM = Object.fromEntries(Object.entries(DIMS).flatMap(([k,d])=>Object.keys(d.subs).map(s=>[s,k])));
+const flv=v=>v>=60?'hi':v<=40?'lo':'mid';
+const FI={hi:0,mid:1,lo:2};
+
+/* 기질 조합 (Cloninger 모델에서 기질은 서로 맞물려 행동을 만든다) */
+const COMBOS = [
+ ['NS','HA','새로움 × 조심성',{
+  HH:'액셀과 브레이크를 함께 밟는 조합이에요. 새로운 게 끌리면서도 걱정이 같이 올라와서, 하고 싶은 마음과 망설임 사이를 오가요. 작게 시험해 보는 방식이면 두 힘이 같이 일해요.',
+  HL:'액셀이 강하고 브레이크가 약해요. 과감하고 추진력이 있지만, 위험을 작게 볼 수 있어요.',
+  LH:'브레이크가 강하고 액셀이 약해요. 신중하고 안정적이지만, 기회 앞에서 오래 망설일 수 있어요.',
+  LL:'액셀도 브레이크도 부드러워요. 차분하고 기복이 적지만, 변화를 만들 동기는 약할 수 있어요.'}],
+ ['HA','RD','조심성 × 사람',{
+  HH:'관계에서 거절당할까 봐 신경을 많이 써요. 배려심이 크지만 눈치를 보느라 지칠 수 있어요.',
+  HL:'사람에게 기대기보다 혼자서 안전을 챙겨요. 독립적이지만 도움 요청이 늦어요.',
+  LH:'사람을 편하게 대하고 정이 많아요. 관계에서 에너지를 얻어요.',
+  LL:'관계에 쿨하고 독립적이에요. 감정에 덜 휘둘리지만 거리감 있게 보일 수 있어요.'}],
+ ['NS','P','시작하는 힘 × 버티는 힘',{
+  HH:'시작하는 힘과 버티는 힘이 모두 커요. 열정과 실행력을 함께 가진 드문 조합이에요.',
+  LH:'화려하진 않아도 묵묵히 끝까지 가는 장인형이에요. 맡은 일을 깊게 파고들어요.',
+  HL:'시작은 많고 끝은 적을 수 있어요. 흥미가 떨어지는 지점을 미리 알고 장치를 만들어 두세요.',
+  LL:'무리하지 않고 꼭 필요한 만큼 움직여요. 장기 목표에선 외부 마감이나 동료가 도움이 돼요.'}]
+];
+/* 성격 유형: 자율성·연대감·자기초월 조합 (Cloninger의 성격 8유형을 쉬운 말로) */
+const CTYPES = {
+ HHH:['창조형','스스로 방향을 정하고, 사람과 함께하며, 더 큰 의미까지 봐요. 세 성격 힘이 고르게 자란 성숙한 조합이에요.'],
+ HHL:['조직형','목표가 분명하고 사람과도 잘 협력해요. 현실적이고 믿음직하지만, 틀 밖의 상상은 덜 하는 편이에요.'],
+ HLH:['신념형','내 비전과 확신이 강해요. 큰 그림을 그리지만, 다른 사람의 속도와 관점을 놓칠 수 있어요.'],
+ HLL:['자립형','스스로를 잘 이끌고 실용적이에요. 혼자서도 잘하지만, 협력에서 얻을 것을 놓칠 수 있어요.'],
+ LHH:['감성형','따뜻하고 이상이 높아요. 의미와 사람을 소중히 여기지만, 내 방향이 쉽게 흔들릴 수 있어요.'],
+ LHL:['협력형','사람과 잘 맞춰 가요. 갈등이 적지만, 내 목표보다 남의 기대를 따르기 쉬워요.'],
+ LLH:['몽상형','상상력과 직관이 풍부해요. 그 힘을 현실의 목표와 연결하는 게 다음 과제예요.'],
+ LLL:['재정비형','지금은 스스로를 이끄는 힘도, 함께하는 힘도 지쳐 있어요. 성격은 경험으로 자라니 회복이 먼저예요.']
+};
+/* 상황별 해석: 세부 척도 조합으로 고른다 */
+const SITU = [
+ ['work','일할 때',[
+  [f=>H(f,'P1')&&H(f,'P2'),'맡은 일을 바로 시작해서 끝까지 가져가요. "맡기면 끝나는 사람"이라는 평을 듣기 쉬워요.'],
+  [f=>L(f,'P1')&&H(f,'P3'),'기준은 높은데 시작이 늦어요. 완벽하게 하려다 시작을 미루는 패턴일 수 있어요. 첫 30분은 "초안 버전"으로 정해 보세요.'],
+  [f=>H(f,'NS1')&&L(f,'P2'),'새 프로젝트를 시작할 땐 신나지만, 반복 단계에서 흥미가 떨어져요. 마무리를 같이 볼 파트너가 있으면 좋아요.'],
+  [f=>H(f,'NS1')&&H(f,'P2'),'새로운 걸 시작하고 끝까지 밀어붙여요. 신규 기획이나 사업 개발에 잘 맞아요.'],
+  [f=>H(f,'NS2')&&!H(f,'HA1'),'결정이 빠르고 망설임이 적어요. 속도가 중요한 일에 강하지만, 큰 결정은 하루 묵혀 보세요.'],
+  [f=>L(f,'NS2')&&H(f,'HA1'),'결정 전에 오래 따져봐요. 리스크 검토·품질 관리에 강하고, 결정 마감 시간을 정해 두면 더 좋아요.'],
+  [f=>H(f,'NS4')&&H(f,'SD3'),'기존 방식을 의심하고 더 나은 방법을 찾아요. 개선·혁신 역할에 맞아요.'],
+  [f=>L(f,'NS4')&&H(f,'P4'),'정해진 절차를 성실하게 지켜요. 운영·관리 역할에서 신뢰받아요.'],
+  [f=>H(f,'P3')&&H(f,'HA4'),'기준은 높은데 일이 몰리면 압도돼요. 번아웃 위험이 있는 조합이라 목표를 단계별로 나누는 게 중요해요.'],
+  [f=>H(f,'SD2')&&H(f,'SD5'),'목표가 분명하고 실행력도 있어요. 장기 목표를 스스로 관리할 수 있어요.'],
+  [f=>H(f,'ST1')&&H(f,'P3'),'몰입과 완성도 욕심이 함께 있어요. 깊이 있는 결과물을 만들지만 시간 가는 줄 모르니 끝나는 시간을 정해 두세요.'],
+  [f=>H(f,'ST1')&&!H(f,'P3'),'몰입하면 시간 가는 줄 몰라요. 창작·연구처럼 깊이가 필요한 일에 유리해요.'],
+  [f=>H(f,'P4')&&L(f,'SD1'),'일은 많이 하는데 만족감은 낮아요. 일의 양보다 의미를 점검해 볼 때일 수 있어요.']
+ ]],
+ ['rel','사람과 있을 때',[
+  [f=>H(f,'RD2')&&L(f,'HA3'),'사람을 쉽게 사귀고 모임에서 편해요. 네트워크를 넓히는 데 강해요.'],
+  [f=>H(f,'RD2')&&H(f,'HA3'),'사람은 좋아하지만 처음엔 긴장해요. 1:1이나 작은 자리에서 매력이 더 드러나요.'],
+  [f=>!H(f,'RD2')&&H(f,'HA3'),'새 관계를 만드는 데 에너지가 많이 들어요. 소수의 깊은 관계가 잘 맞아요.'],
+  [f=>H(f,'RD4'),'거절이 어려워 부탁을 다 받아 주기 쉬워요. "생각해 보고 알려줄게"를 연습해 보세요.'],
+  [f=>L(f,'RD3')&&H(f,'RD1'),'감정은 크게 느끼는데 밖으로 잘 꺼내지 않아요. 속으로 쌓이기 쉬우니 글이든 한 사람이든 털어놓을 통로가 필요해요.'],
+  [f=>H(f,'RD3')&&H(f,'RD1'),'감정을 깊이 느끼고 솔직하게 나눠요. 가까운 사람과 정서적으로 깊이 연결돼요.'],
+  [f=>H(f,'C2')&&H(f,'RD1'),'공감 능력이 커서 주변 사람이 기대기 쉬워요. 대신 남의 감정까지 떠안아 지칠 수 있어요.'],
+  [f=>L(f,'C4'),'상처를 오래 기억해요. 갈등 뒤 관계 회복이 느릴 수 있어요.'],
+  [f=>L(f,'C1')&&H(f,'NS4'),'기준이 분명하고 직설적이에요. 의도와 달리 공격적으로 들릴 수 있으니 말의 온도를 살펴 보세요.'],
+  [f=>L(f,'C3')&&L(f,'RD2'),'혼자 일하는 게 편하고 사람을 쉽게 믿지 않아요. 협업에선 기대치를 처음에 분명히 맞춰 두면 좋아요.'],
+  [f=>L(f,'RD4')&&H(f,'C1'),'남의 시선엔 휘둘리지 않으면서 사람은 너그럽게 받아들여요. 건강한 독립성이에요.'],
+  [f=>H(f,'C3')&&H(f,'C5'),'사람을 믿고 돕되 원칙은 지켜요. 팀에서 신뢰의 중심이 되기 쉬워요.']
+ ]],
+ ['stress','스트레스 받을 때',[
+  [f=>H(f,'HA1')&&H(f,'HA4'),'걱정과 압도감이 함께 커져요. 걱정을 종이에 쓰고 "내가 바꿀 수 있는 것"만 골라 보세요.'],
+  [f=>H(f,'HA1')&&L(f,'HA4'),'걱정은 많지만 막상 닥치면 잘 버텨요. 걱정의 크기보다 실제 대처력이 좋다는 걸 기억하세요.'],
+  [f=>L(f,'HA1')&&L(f,'HA2'),'스트레스엔 강하지만 위험 신호를 늦게 알아챌 수 있어요. 큰 결정엔 신중한 사람의 의견을 들어 보세요.'],
+  [f=>H(f,'NS1')&&H(f,'HA1'),'하고 싶은 것과 걱정이 동시에 커서 마음속 줄다리기가 잦아요. 작게 시험해 보면 갈등이 줄어요.'],
+  [f=>L(f,'SD1'),'요즘 무기력하거나 억울한 마음이 자주 들어요. 성격이라기보다 상태일 수 있으니 회복을 먼저 챙기세요.'],
+  [f=>L(f,'RD3')&&!L(f,'HA1'),'힘든 일을 혼자 삭이는 편이에요. 털어놓기만 해도 스트레스가 꽤 줄어드는 타입일 수 있어요.'],
+  [f=>H(f,'SD3')&&!H(f,'HA4'),'위기에서 오히려 침착하게 해결책을 찾아요.'],
+  [f=>H(f,'NS3')&&!H(f,'SD5'),'스트레스를 소비나 즉흥적인 행동으로 풀 수 있어요. 기분이 나쁠 때의 결제는 하루 미뤄 보세요.'],
+  [f=>H(f,'P3')&&L(f,'SD4'),'남과 비교하며 스스로를 몰아붙여요. 성취해도 만족이 짧을 수 있어요.'],
+  [f=>H(f,'ST1')||H(f,'ST2'),'몰입하거나 의미를 느끼는 활동(산책·음악·창작)이 회복에 특히 잘 들어요.']
+ ]]
+];
+const SITU_KEYS={work:['P1','P2','P3','P4','NS2','NS4','SD3','SD5'],rel:['RD1','RD2','RD3','RD4','HA3','C1','C2','C3','C4','C5'],stress:['HA1','HA2','HA4','SD1','RD3','NS3']};
+function H(f,k){return f[k]>=60} function L(f,k){return f[k]<=40}
+/* 성장 팁: 자랄 수 있는 세부 척도 중 가장 약한 것 */
+const FTIPS = {
+ SD1:'하루 끝에 "오늘 괜찮았던 일 하나"를 적어 보세요. 만족감은 큰 일보다 작은 순간을 알아차리는 데서 자라요.',
+ SD2:'1년 뒤 "이렇게 되어 있으면 좋겠다"는 모습을 한 문장으로 써 보세요. 방향이 생기면 일상의 선택이 쉬워져요.',
+ SD3:'미뤄 둔 문제 하나를 골라 15분만 해결 방법을 적어 보세요. 작게 풀어 본 경험이 다음 문제의 자신감이 돼요.',
+ SD4:'남과 비교하고 싶을 때 "지난달의 나"와 비교해 보세요. 비교 대상만 바꿔도 덜 지쳐요.',
+ SD5:'의지 대신 환경을 바꿔 보세요. 유혹이 되는 앱이나 물건을 한 단계 멀리 두기만 해도 효과가 커요.',
+ C1:'판단이 빨리 떠오를 때 "저 사람 입장에선 왜 그랬을까?"를 한 번만 물어보세요.',
+ C2:'대화할 때 상대 말을 한 문장으로 요약해 돌려줘 보세요. 공감은 기술이라 연습하면 늘어요.',
+ C3:'이번 주에 대가 없이 누군가를 한 번 도와 보세요. 작은 도움이 신뢰를 쌓는 가장 빠른 길이에요.',
+ C4:'마음에 걸리는 일 하나를 떠올리고, 그 일이 남긴 배움을 적어 보세요. 용서는 상대보다 나를 위한 거예요.',
+ C5:'결과가 급할 때 "이 방법을 모두가 알아도 괜찮을까?"를 기준으로 삼아 보세요.',
+ P1:'하기 싫은 일은 "2분만 하기"로 시작해 보세요. 시작만 하면 이어 가기는 훨씬 쉬워요.',
+ P2:'그만두고 싶을 때를 대비해 "어디까지 하면 멈춰도 되는지"를 미리 정해 두세요. 끝이 보이면 끝까지 가기 쉬워요.',
+ P3:'이번 주 목표 하나를 숫자로 정해 보세요(예: 3번, 30분). 잴 수 있으면 의욕이 붙어요.',
+ P4:'일한 시간을 하루 단위로 기록해 보세요. 쌓인 기록이 꾸준함의 동기가 돼요.',
+ HA1:'걱정이 들면 "최악·최선·가장 그럴듯한 결과"를 한 줄씩 적어 보세요. 막연한 불안이 구체적인 계획이 돼요.',
+ HA4:'일이 몰리면 목록을 쓰고 "오늘 꼭 할 1개"만 표시해 보세요. 압도감이 확 줄어요.',
+ RD4:'부탁을 받으면 바로 답하지 말고 "생각해 보고 알려줄게"라고 말해 보세요. 거절도 관계를 지키는 방법이에요.',
+ NS3:'사고 싶은 게 생기면 장바구니에 넣고 3일 뒤에 다시 보세요.'
+};
+function pickTips(f){
+  // 건강도: 자랄 힘은 점수 그대로, 부담 척도(걱정·압도·남 따르기·씀씀이)는 뒤집어서
+  const c=Object.keys(FTIPS).map(k=>[k,['HA1','HA4','RD4','NS3'].includes(k)?100-f[k]:f[k]]).sort((a,b)=>a[1]-b[1]);
+  return c.slice(0,3).map(([k,v])=>({k,name:SUBNAME[k],text:FTIPS[k]}));
+}
 
 /* ───────── 상태 ───────── */
 const KEY='tci7-v2';
@@ -254,15 +403,22 @@ const level=v=>v>=60?'hi':v<40?'lo':'mid';
 const LV={hi:'높음',mid:'보통',lo:'낮음'};
 function typeOf(d){const k=(d.NS>=50?'H':'L')+(d.HA>=50?'H':'L')+(d.RD>=50?'H':'L');return TYPES[k];}
 function characterLine(d){
-  const sd=d.SD>=50,c=d.C>=50;
-  if(sd&&c) return '스스로를 이끄는 힘과 함께하는 힘이 모두 잘 자라 있어요. 기질의 장점을 살리기 좋은 상태예요.';
-  if(sd) return '스스로를 이끄는 힘은 단단해요. 함께하는 힘을 조금 더 키우면 기질의 장점이 더 잘 드러나요.';
-  if(c) return '다른 사람과 함께하는 힘이 좋아요. 나만의 목표와 기준을 조금 더 세우면 훨씬 단단해져요.';
-  return '요즘 나를 이끄는 힘과 함께하는 힘이 조금 지쳐 있어요. 성격은 경험으로 자라니 작은 것부터 시작해 보세요.';
+  const weak=d.HA>=60?'걱정':d.NS>=60?'충동':d.RD>=60?'남 눈치':d.P<40?'쉽게 멈추는 면':null;
+  const base=d.SD>=50&&d.C>=50?'스스로를 이끄는 힘과 함께하는 힘이 모두 자라 있어요.':d.SD>=50?'스스로를 이끄는 힘은 단단하고, 함께하는 힘은 더 자랄 여지가 있어요.':d.C>=50?'함께하는 힘이 좋고, 나만의 방향을 세우는 힘은 더 자랄 여지가 있어요.':'요즘 나를 이끄는 힘과 함께하는 힘이 조금 지쳐 있어요.';
+  const tail=d.SD>=50?(weak?`그래서 기질의 약한 면(${weak})을 스스로 다룰 힘이 있어요.`:'그래서 기질의 장점을 원하는 방향으로 쓰기 좋은 상태예요.'):'성격이 자라면 같은 기질도 훨씬 성숙하게 드러나요. 기질은 잘 안 바뀌지만 성격은 키울 수 있어요.';
+  return base+' '+tail;
 }
 // 공유 링크: 7개 점수만 담는다(답변 원본은 담지 않음)
-const encode=d=>Object.keys(DIMS).map(k=>d[k].toString(36).padStart(2,'0')).join('');
-function decode(s){if(!/^[0-9a-z]{14}$/.test(s||''))return null;const o={};Object.keys(DIMS).forEach((k,i)=>{o[k]=Math.min(100,parseInt(s.slice(i*2,i*2+2),36));});return o;}
+const p2=v=>Math.max(0,Math.min(100,v)).toString(36).padStart(2,'0');
+const encode=d=>Object.keys(DIMS).map(k=>p2(d[k])).join('');
+const encodeAll=r=>encode(r.dims)+(r.subs?SUBKEYS.map(k=>p2(r.subs[k])).join(''):'');
+function decode(s){
+  if(!/^[0-9a-z]+$/.test(s||'')||(s.length!==14&&s.length!==14+SUBKEYS.length*2))return null;
+  const n=i=>Math.min(100,parseInt(s.slice(i*2,i*2+2),36));
+  const dims={};Object.keys(DIMS).forEach((k,i)=>dims[k]=n(i));
+  let subs=null;if(s.length>14){subs={};SUBKEYS.forEach((k,i)=>subs[k]=n(7+i));}
+  return {dims,subs};
+}
 
 /* ───────── 라우터 ───────── */
 const $app=document.getElementById('app');
@@ -342,28 +498,57 @@ function Question(){
     </main>`;
 }
 function Result(q){
-  const shared=decode(q.get('s'));
+  const s=q.get('s')||'';
+  const shared=decode(s);
+  const mine=S.history[0];
   let dims,subs=null,isShared=false;
-  if(shared&&!(S.history[0]&&encode(S.history[0].dims)===q.get('s'))){dims=shared;isShared=true;}
-  else if(S.history[0]){dims=S.history[0].dims;subs=S.history[0].subs;}
+  if(shared&&!(mine&&s.slice(0,14)===encode(mine.dims))){dims=shared.dims;subs=shared.subs;isShared=true;}
+  else if(mine){dims=mine.dims;subs=mine.subs;}
   else return Landing();
   const [tname,tdesc]=typeOf(dims);
   const ax=k=>`${DIMS[k].name} ${dims[k]>=50?'높은 편':'낮은 편'}`;
+  const hl=k=>dims[k]>=50?'H':'L';
+  const [cname,cdesc]=CTYPES[hl('SD')+hl('C')+hl('ST')];
+
+  // 세부 척도 행 + 같은 차원 안에서 엇갈리는 부분
+  const facetRows=k=>{
+    if(!subs) return '';
+    const ks=Object.keys(DIMS[k].subs);
+    const rows=ks.map(sk=>{const v=subs[sk];return `<div class="facet"><div class="sub-row"><span>${SUBNAME[sk]}</span><div class="bar"><i data-w="${v}"></i></div><b class="num">${v}</b></div><p>${FT[sk][FI[flv(v)]]}</p></div>`;}).join('');
+    const sorted=[...ks].sort((a,b)=>subs[b]-subs[a]);const hi=sorted[0],lo=sorted[sorted.length-1];
+    const gap=subs[hi]-subs[lo]>=35?`<div class="diverge">${DIMS[k].name} 전체는 ${dims[k]}점이지만, 안을 보면 '${SUBNAME[hi]}'(${subs[hi]})은 높고 '${SUBNAME[lo]}'(${subs[lo]})은 낮아요. 평균만 보면 놓치는 부분이에요.</div>`:'';
+    return `<div class="subs">${rows}</div>${gap}`;
+  };
   const block=g=>Object.keys(DIMS).filter(k=>DIMS[k].group===g).map(k=>{
     const v=dims[k],lv=level(v),open=ui.open[k];
-    const subRows=subs&&Object.keys(DIMS[k].subs).length?`<div class="subs">${Object.entries(DIMS[k].subs).map(([sk,sn])=>`<div class="sub-row"><span>${sn}</span><div class="bar"><i data-w="${subs[sk]}"></i></div><b class="num">${subs[sk]}</b></div>`).join('')}</div>`:'';
     return `<div class="dim ${open?'open':''}" data-dim="${k}">
       <button class="dim-head" data-act="toggle" data-k="${k}" aria-expanded="${!!open}">
         <div class="dim-top"><span class="dim-name">${DIMS[k].name}</span><span style="display:flex;align-items:center;gap:4px"><span class="dim-score num">${v}<span class="lvl ${lv}">${LV[lv]}</span></span>${ICON.chev}</span></div>
         <div class="bar"><i data-w="${v}"></i></div>
         <div class="bar-legend"><span>${DIMS[k].plain}</span></div>
       </button>
-      <div class="dim-body"><p>${TEXT[k][lv]}</p>${subRows}</div>
+      <div class="dim-body"><p>${TEXT[k][lv]}</p>${facetRows(k)}</div>
     </div>`;}).join('');
-  // 성장 팁: 성격 중 가장 낮은 것 1개 + 기질 중 극단(위험회피 높음/자극추구 높음/인내력 낮음/사회적 민감성 높음) 1개
-  const ch=['SD','C','ST'].sort((a,b)=>dims[a]-dims[b])[0];
-  const tempCand=[['HA',dims.HA],['NS',dims.NS],['P',100-dims.P],['RD',dims.RD]].sort((a,b)=>b[1]-a[1])[0];
-  const tips=[TIPS[ch]].concat(tempCand[1]>=60?[TIPS[tempCand[0]]]:[]);
+
+  const combos=COMBOS.map(([a,b,title,t])=>{
+    const near=[a,b].filter(k=>Math.abs(dims[k]-50)<10).map(k=>DIMS[k].name);
+    const note=near.length?`<p class="caption weak" style="margin-top:6px">${near.join('·')} 점수가 가운데(50)에 가까워서, 이 경향은 약하게 나타날 수 있어요.</p>`:'';
+    return `<div class="tip"><b>${title}</b><span class="caption weak">${DIMS[a].name} ${dims[a]} · ${DIMS[b].name} ${dims[b]}</span><p>${t[hl(a)+hl(b)]}</p>${note}</div>`;}).join('');
+
+  let features='',situ='',tips='';
+  if(subs){
+    const top=SUBKEYS.map(k=>[k,subs[k]]).sort((a,b)=>Math.abs(b[1]-50)-Math.abs(a[1]-50)).slice(0,5);
+    features=`<section class="section"><h2 class="title2">가장 뚜렷한 특징 5가지</h2><p class="caption sub">세부 척도 29개 중 가운데(50)에서 가장 멀리 떨어진 것들이에요.</p>
+      <div class="feats">${top.map(([k,v])=>`<div class="feat"><div class="score num ${v>=50?'hi':'lo'}">${v}</div><div><b>${SUBNAME[k]} <span class="caption weak">${DIMS[SUBDIM[k]].name}</span></b><p>${FT[k][FI[flv(v)]]}</p></div></div>`).join('')}</div></section>`;
+    situ=`<section class="section"><h2 class="title2">상황별로 보면</h2><p class="caption sub">세부 척도의 조합으로 골랐어요.</p>${SITU.map(([id,title,rules])=>{
+      const list=rules.filter(([c])=>c(subs)).slice(0,3).map(([,t])=>t);
+      // 조합 규칙이 적으면, 이 상황과 관련된 세부 척도 중 가장 뚜렷한 것으로 채운다
+      SITU_KEYS[id].map(k=>[k,subs[k]]).filter(([,v])=>Math.abs(v-50)>=15).sort((x,y)=>Math.abs(y[1]-50)-Math.abs(x[1]-50))
+        .forEach(([k,v])=>{if(list.length<2)list.push(`${SUBNAME[k]}(${v}): ${FT[k][FI[flv(v)]]}`);});
+      const hits=list.map(t=>`<li>${t}</li>`).join('')||'<li>한쪽으로 뚜렷하게 치우친 패턴은 없어요. 상황에 맞춰 유연하게 움직이는 편이에요.</li>';
+      return `<div class="situ"><h3>${title}</h3><ul>${hits}</ul></div>`;}).join('')}</section>`;
+    if(!isShared) tips=`<section class="section"><h2 class="title2">이번 주에 해볼 것</h2><p class="caption sub">상대적으로 약한 세부 척도에 맞췄어요.</p><div class="tips">${pickTips(subs).map(t=>`<div class="tip"><b>${t.name} 키우기</b><p>${t.text}</p></div>`).join('')}</div></section>`;
+  }
   return `<div class="appbar"><button class="icon-btn" data-act="home" aria-label="처음으로">${ICON.back}</button></div>
   <main class="has-cta">
     <p class="body2 sub">${isShared?'친구가 공유한 결과예요':'8가지 기질 유형 중 나는'}</p>
@@ -372,15 +557,22 @@ function Result(q){
       <h1 class="display" tabindex="-1">${tname}</h1>
       <p class="body2">${tdesc}</p>
       <div class="axes"><b>${ax('NS')}</b><b>${ax('HA')}</b><b>${ax('RD')}</b></div>
+      ${(()=>{const n=['NS','HA','RD'].filter(k=>Math.abs(dims[k]-50)<10).map(k=>DIMS[k].name);return n.length?`<p class="caption" style="margin-top:14px;opacity:.85">${n.join('·')}이 가운데(50)에 가까워서 이웃한 유형의 모습도 함께 있어요.</p>`:'';})()}
     </div>
+    <div class="card" style="margin-top:12px"><div class="label">성격 유형 · 자율성 ${dims.SD} · 연대감 ${dims.C} · 자기초월 ${dims.ST}</div>
+      <div class="title2" style="margin-top:4px">${cname}</div><p class="body2" style="margin-top:6px;color:var(--grey-700)">${cdesc}</p></div>
     <p class="body1" style="margin-top:20px">${characterLine(dims)}</p>
 
-    <section class="section"><h2 class="title2">타고난 기질</h2><p class="caption sub">잘 바뀌지 않는 나의 기본값이에요. 눌러서 자세히 볼 수 있어요.</p><div class="dims">${block('기질')}</div></section>
+    <section class="section"><h2 class="title2">기질 조합으로 보면</h2><p class="caption sub">기질은 하나씩보다 서로 맞물려서 행동을 만들어요.</p><div class="tips">${combos}</div></section>
+    ${features}
+    ${situ}
+    <section class="section"><h2 class="title2">타고난 기질</h2><p class="caption sub">잘 바뀌지 않는 나의 기본값이에요. 눌러서 세부 척도를 볼 수 있어요.</p><div class="dims">${block('기질')}</div></section>
     <section class="section"><h2 class="title2">자라온 성격</h2><p class="caption sub">경험과 노력으로 자라는 힘이에요.</p><div class="dims">${block('성격')}</div></section>
-    ${isShared?'':`<section class="section"><h2 class="title2">이번 주에 해볼 것</h2><div class="tips">${tips.map(([t,d])=>`<div class="tip"><b>${t}</b><p>${d}</p></div>`).join('')}</div></section>`}
+    ${tips}
+    ${subs?'':'<p class="caption weak" style="margin-top:24px">이 링크에는 7개 점수만 들어 있어서 세부 척도 분석은 보이지 않아요.</p>'}
 
-    <div class="disclaimer">점수는 0~100으로, 내 응답을 비율로 바꾼 값이에요. 다른 사람과 비교한 순위(규준 점수)가 아니에요.<br><br>
-    문항은 공개 문항 모음 IPIP의 TCI 대응 척도에서 골라 번역했어요(열린 믿음 3문항만 자체 문항). 원 척도를 줄인 버전이라 정확도는 원본보다 낮을 수 있어요. 공식 TCI 검사나 진단을 대신하지 않아요. 정확한 해석이 필요하면 전문 기관의 공식 검사를 받아 보세요.</div>
+    <div class="disclaimer">점수는 0~100으로, 내 응답을 비율로 바꾼 값이에요. 다른 사람과 비교한 순위(규준 점수)가 아니에요. 세부 척도는 3문항씩이라 7개 차원 점수보다 흔들림이 커요.<br><br>
+    문항은 공개 문항 모음 IPIP의 TCI 대응 척도에서 골라 번역했어요(열린 믿음 3문항만 자체 문항). 원 척도를 줄인 버전이라 정확도는 원본보다 낮을 수 있어요. 공식 TCI 검사나 진단을 대신하지 않아요.</div>
     ${isShared?'':`<button class="text-btn" data-act="retake" style="width:100%;margin-top:16px">처음부터 다시 하기</button>`}
   </main>
   <div class="cta">${isShared?`<button class="btn" data-act="mine">나도 검사하기</button><p class="note">87문항 · 약 8분 · 가입 없이 무료</p>`:`<button class="btn" data-act="share">결과 공유하기</button>`}</div>`;
@@ -434,7 +626,7 @@ document.addEventListener('keydown',e=>{
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2000);}
 async function share(){
   const d=S.history[0].dims;const [t]=typeOf(d);
-  const url=location.href.split('#')[0]+'#/result?s='+encode(d);
+  const url=location.href.split('#')[0]+'#/result?s='+encodeAll(S.history[0]);
   const text=`나는 '${t}'래요. 기질·성격 7가지 결과 보고 너도 해봐요`;
   if(navigator.share&&matchMedia('(pointer:coarse)').matches){try{await navigator.share({title:'기질·성격 7요인 검사',text,url});}catch(e){} return;}
   try{await navigator.clipboard.writeText(text+'\n'+url);toast('링크를 복사했어요');}catch{prompt('이 링크를 복사해 주세요',url);}
