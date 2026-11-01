@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>기질·성격 7요인 검사</title>
+<meta name="description" content="87문항, 8분. 타고난 기질 4가지와 살면서 자란 성격 3가지를 알아봐요.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --grey-50:#F9FAFB;--grey-100:#F2F4F6;--grey-200:#E5E8EB;--grey-300:#D1D6DB;--grey-400:#B0B8C1;
+  --grey-500:#8B95A1;--grey-600:#6B7684;--grey-700:#4E5968;--grey-800:#333D4B;--grey-900:#191F28;
+  --primary:#4B5BD6;--primary-pressed:#3A48B8;--primary-subtle:#EEF0FC;
+  --success:#1F9D6B;--danger:#E5484D;
+  --bg:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--grey-100)}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;color:var(--grey-900);
+  word-break:keep-all;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+#app{max-width:480px;min-height:100dvh;margin:0 auto;background:var(--bg);position:relative;overflow-x:hidden}
+.display{font-size:28px;line-height:38px;font-weight:700;letter-spacing:-0.02em}
+.title1{font-size:24px;line-height:34px;font-weight:700;letter-spacing:-0.02em}
+.title2{font-size:20px;line-height:30px;font-weight:600;letter-spacing:-0.02em}
+.body1{font-size:17px;line-height:27px}
+.body2{font-size:15px;line-height:24px}
+.caption{font-size:13px;line-height:19px}
+.sub{color:var(--grey-600)}.weak{color:var(--grey-500)}
+.num{font-variant-numeric:tabular-nums}
+main{padding:0 20px}
+main.has-cta{padding-bottom:calc(140px + env(safe-area-inset-bottom,0px))}
+.scr.fwd{animation:in-fwd .28s cubic-bezier(.22,1,.36,1)}
+.scr.back{animation:in-back .28s cubic-bezier(.22,1,.36,1)}
+@keyframes in-fwd{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes in-back{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+.appbar{height:56px;display:flex;align-items:center;padding:0 8px;position:sticky;top:0;background:var(--bg);z-index:5}
+.icon-btn{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;transition:transform .1s,background-color .1s}
+.icon-btn:active{transform:scale(.94);background:var(--grey-100)}
+.appbar .right{margin-left:auto;padding:0 12px;height:40px;border-radius:12px;color:var(--grey-600);font-size:15px;transition:transform .1s,background-color .1s}
+.appbar .right:active{transform:scale(.97);background:var(--grey-100)}
+.progress{height:4px;background:var(--grey-100);position:sticky;top:56px;z-index:5}
+.progress>i{display:block;height:100%;background:var(--primary);transition:width .25s ease-out}
+.cta{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,480px);z-index:15;
+  padding:28px 20px calc(12px + env(safe-area-inset-bottom,0px));
+  background:linear-gradient(to bottom,rgba(255,255,255,0),var(--bg) 28px);display:flex;flex-direction:column;gap:4px}
+.btn{height:56px;width:100%;border-radius:16px;background:var(--primary);color:#fff;font-size:17px;font-weight:600;
+  transition:transform .1s,background-color .1s}
+.btn:active{transform:scale(.97);background:var(--primary-pressed)}
+.btn.secondary{background:var(--grey-100);color:var(--grey-800)}
+.btn.secondary:active{background:var(--grey-200)}
+.text-btn{height:44px;border-radius:12px;color:var(--grey-600);font-size:15px;font-weight:600;transition:transform .1s,background-color .1s}
+.text-btn:active{transform:scale(.97);background:var(--grey-100)}
+.note{text-align:center;color:var(--grey-500);font-size:13px;line-height:19px;padding-top:4px}
+
+/* 랜딩 */
+.hero-art{margin:24px 0 32px;aspect-ratio:4/3;border-radius:20px;background:var(--grey-50);display:grid;place-items:center}
+.facts{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.chip{height:32px;padding:0 12px;border-radius:999px;background:var(--grey-100);color:var(--grey-700);font-size:13px;display:inline-flex;align-items:center;font-weight:600}
+.list{margin-top:32px;display:flex;flex-direction:column;gap:20px}
+.row{display:flex;gap:16px;align-items:flex-start}
+.row .dot{flex:none;width:40px;height:40px;border-radius:12px;background:var(--primary-subtle);color:var(--primary);display:grid;place-items:center;font-weight:700;font-size:15px}
+
+/* 질문 */
+.q-wrap{padding-top:24px}
+.q-label{color:var(--grey-500);font-size:15px;line-height:24px;font-weight:600}
+.statement{margin-top:8px;min-height:68px}
+.statement.enter{animation:st-in .3s cubic-bezier(.22,1,.36,1)}
+.statement.enter-back{animation:st-back .3s cubic-bezier(.22,1,.36,1)}
+@keyframes st-in{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes st-back{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+.choices{margin-top:24px;display:flex;flex-direction:column;gap:8px}
+.choice{height:60px;border-radius:16px;border:1.5px solid var(--grey-200);background:#fff;padding:0 20px;
+  display:flex;align-items:center;justify-content:space-between;font-size:17px;font-weight:600;text-align:left;
+  transition:transform .1s,background-color .12s,border-color .12s,color .12s}
+.choice:active{transform:scale(.98)}
+.choice span{font-size:13px;font-weight:400;color:var(--grey-400)}
+.choice[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-subtle);color:var(--primary-pressed)}
+.choice[aria-pressed="true"] span{color:var(--primary)}
+
+/* 결과 */
+.reveal{animation:reveal .6s cubic-bezier(.22,1,.36,1)}
+@keyframes reveal{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+.type-card{margin-top:20px;border-radius:20px;padding:28px 24px;color:#fff;
+  background:linear-gradient(150deg,#4B5BD6 0%,#6E5BD0 55%,#8C6BC9 100%)}
+.type-card .tag{font-size:13px;line-height:19px;opacity:.8;font-weight:600}
+.type-card .display{margin-top:4px}
+.type-card .body2{margin-top:12px;opacity:.92}
+.type-card .axes{display:flex;gap:6px;margin-top:20px;flex-wrap:wrap}
+.type-card .axes b{height:28px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.18);font-size:13px;font-weight:600;display:inline-flex;align-items:center}
+.section{margin-top:40px}
+.section .caption{margin-top:4px}
+.dims{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.dim{border-radius:16px;background:var(--grey-50);transition:background-color .12s}
+.dim-head{width:100%;padding:16px;display:block;text-align:left;border-radius:16px;transition:transform .1s}
+.dim-head:active{transform:scale(.98)}
+.dim-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.dim-name{font-size:17px;font-weight:600;line-height:27px}
+.dim-score{font-size:15px;font-weight:600;color:var(--grey-700)}
+.lvl{font-size:13px;font-weight:600;margin-left:6px}
+.lvl.hi{color:var(--primary)}.lvl.mid{color:var(--grey-600)}.lvl.lo{color:var(--grey-700)}
+.bar{margin-top:10px;height:8px;border-radius:999px;background:var(--grey-200);position:relative;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--primary);width:0;transition:width .7s cubic-bezier(.22,1,.36,1)}
+.bar-legend{display:flex;justify-content:space-between;margin-top:6px;font-size:13px;color:var(--grey-500)}
+.dim-body{display:none;padding:0 16px 18px}
+.dim.open .dim-body{display:block}
+.dim-body p{font-size:15px;line-height:24px;color:var(--grey-800)}
+.subs{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.sub-row{display:grid;grid-template-columns:96px 1fr 32px;gap:10px;align-items:center;font-size:13px;color:var(--grey-700)}
+.sub-row .bar{margin:0;height:6px}
+.sub-row .bar>i{background:var(--grey-500)}
+.sub-row b{font-weight:600;text-align:right}
+.chev{transition:transform .2s;flex:none}
+.dim.open .chev{transform:rotate(180deg)}
+.tips{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+.tip{padding:18px;border-radius:16px;background:var(--grey-50)}
+.tip b{display:block;font-size:15px;line-height:24px}
+.tip p{margin-top:4px;font-size:15px;line-height:24px;color:var(--grey-700)}
+.disclaimer{margin-top:40px;padding:16px;border-radius:16px;background:var(--grey-50);color:var(--grey-600);font-size:13px;line-height:20px}
+.toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);opacity:0;
+  background:var(--grey-800);color:#fff;font-size:15px;padding:12px 18px;border-radius:14px;transition:opacity .2s,transform .2s;z-index:30;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40;opacity:0;transition:opacity .2s}
+.sheet{position:fixed;left:50%;bottom:0;width:min(100%,480px);transform:translate(-50%,100%);background:#fff;z-index:41;
+  border-radius:24px 24px 0 0;padding:12px 20px calc(16px + env(safe-area-inset-bottom,0px));transition:transform .32s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 -8px 24px rgba(0,0,0,.08)}
+.sheet .handle{width:36px;height:4px;border-radius:4px;background:var(--grey-300);margin:0 auto 20px}
+.sheet.show{transform:translate(-50%,0)}.sheet-bg.show{opacity:1}
+.sheet .btns{display:flex;gap:8px;margin-top:24px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+/* ───────── 문항 ─────────
+   IPIP(International Personality Item Pool, 퍼블릭 도메인) "Preliminary IPIP Scales Measuring
+   Constructs Similar to Those in Cloninger's TCI"(ipip.ori.org/newTCIKey.htm)에서 세부 척도마다
+   3문항을 골라 번역했다. 원 척도는 8~12문항. ST3(열린 믿음)은 IPIP에 대응 척도가 없어 자체 문항.
+   r:1 = 역문항 */
+const DIMS = {
+  NS:{name:'자극추구',group:'기질',plain:'새로운 것에 끌리는 정도',subs:{NS1:'새로움 추구',NS2:'즉흥성',NS3:'씀씀이',NS4:'규칙 거부'}},
+  HA:{name:'위험회피',group:'기질',plain:'조심하고 걱정하는 정도',subs:{HA1:'걱정·긴장',HA2:'위험 피하기',HA3:'사람 앞 긴장',HA4:'쉽게 압도됨'}},
+  RD:{name:'사회적 민감성',group:'기질',plain:'사람과 감정에 반응하는 정도',subs:{RD1:'정이 많음',RD2:'친화력',RD3:'마음 열기',RD4:'남 따르기'}},
+  P:{name:'인내력',group:'기질',plain:'보상 없이도 버티는 힘',subs:{P1:'바로 시작',P2:'끝까지 해냄',P3:'성취욕',P4:'근면'}},
+  SD:{name:'자율성',group:'성격',plain:'스스로를 이끄는 힘',subs:{SD1:'삶의 만족',SD2:'목표·희망',SD3:'문제 해결력',SD4:'비교하지 않음',SD5:'자기 조절'}},
+  C:{name:'연대감',group:'성격',plain:'다른 사람과 함께하는 힘',subs:{C1:'관용',C2:'공감',C3:'신뢰·도움',C4:'용서',C5:'양심'}},
+  ST:{name:'자기초월',group:'성격',plain:'나를 넘어선 것과 이어지는 감각',subs:{ST1:'몰입·상상',ST2:'감동·의미',ST3:'열린 믿음'}}
+};
+const ITEMS = [
+ ['NS1','늘 같은 것보다 다양한 게 좋아요'],['NS1','새로운 곳에 가 보는 게 좋아요'],['NS1','아는 것만 계속하는 게 편해요',1],
+ ['NS2','생각하기 전에 일단 뛰어들어요'],['NS2','기분 내키는 대로 행동하는 게 좋아요'],['NS2','행동하기 전에 한 번 더 생각해요',1],
+ ['NS3','가진 돈보다 더 많이 쓸 때가 있어요'],['NS3','카드를 과하게 쓰는 편이에요'],['NS3','감당할 수 있는 만큼만 써요',1],
+ ['NS4','규칙을 어길 때가 있어요'],['NS4','윗사람이나 권위에 맞서는 편이에요'],['NS4','규칙은 지키려고 해요',1],
+ ['HA1','최악의 상황을 걱정해요'],['HA1','쉽게 스트레스를 받아요'],['HA1','대부분의 시간 동안 마음이 편해요',1],
+ ['HA2','위험한 상황은 피해요'],['HA2','위험이 큰 투자는 하지 않을 거예요'],['HA2','위험을 감수하는 편이에요',1],
+ ['HA3','낯선 사람 앞에서는 조용해져요'],['HA3','다른 사람에게 먼저 다가가기가 어려워요'],['HA3','사람들 사이에 있으면 편안해요',1],
+ ['HA4','일이 몰리면 감당이 안 된다고 느껴요'],['HA4','누가 괜찮다고 말해 줘야 안심이 돼요'],['HA4','좌절해도 금방 털고 일어나요',1],
+ ['RD1','영화를 보다가 울 때가 있어요'],['RD1','다른 사람의 불행에 깊이 마음이 아파요'],['RD1','감정이 크게 움직이는 일이 거의 없어요',1],
+ ['RD2','친구를 쉽게 사귀어요'],['RD2','처음 만난 사람과도 금방 가까워져요'],['RD2','사람들과 거리를 두는 편이에요',1],
+ ['RD3','내 감정을 솔직하게 드러내요'],['RD3','걱정거리를 다른 사람에게 이야기해요'],['RD3','감정을 속에 담아 두는 편이에요',1],
+ ['RD4','모두를 기쁘게 해 주려고 해요'],['RD4','다른 사람이 원하는 대로 하는 편이에요'],['RD4','남들이 어떻게 생각하든 신경 쓰지 않아요',1],
+ ['P1','할 일은 바로 시작해요'],['P1','일을 시작하기가 어려워요',1],['P1','하기 싫은 일은 미뤄요',1],
+ ['P2','어려운 도전도 받아들여요'],['P2','쉽게 포기하는 편이에요',1],['P2','일을 끝까지 해내지 못할 때가 많아요',1],
+ ['P3','모든 게 완벽해질 때까지 계속해요'],['P3','한번 시작하면 포기하지 않아요'],['P3','성공하고 싶은 의욕이 크지 않아요',1],
+ ['P4','열심히 일해요'],['P4','기대받는 것보다 더 많이 해요'],['P4','딱 문제없을 만큼만 일해요',1],
+ ['SD1','나는 즐길 줄 알아요'],['SD1','인생에서 손해만 보는 것 같아요',1],['SD1','아무것도 할 기분이 안 들 때가 많아요',1],
+ ['SD2','내가 원하는 게 뭔지 알아요'],['SD2','계속 나를 발전시키고 있어요'],['SD2','내 삶이 어디로 가는지 모르겠어요',1],
+ ['SD3','복잡한 문제도 해결할 수 있어요'],['SD3','문제를 피하지 않고 정면으로 마주해요'],['SD3','쉽게 낙담하는 편이에요',1],
+ ['SD4','일어나는 일을 있는 그대로 받아들여요'],['SD4','다른 사람을 경쟁자로 보는 편이에요',1],['SD4','남보다 높은 지위를 갖고 싶어요',1],
+ ['SD5','유혹을 쉽게 이겨내요'],['SD5','세운 계획은 끝까지 실행해요'],['SD5','나중에 후회할 일을 하곤 해요',1],
+ ['C1','사람들을 있는 그대로 받아들여요'],['C1','대부분의 문제에는 여러 측면이 있다고 생각해요'],['C1','다른 사람을 쉽게 판단하는 편이에요',1],
+ ['C2','다른 사람의 감정이 그대로 느껴져요'],['C2','다른 사람에게 필요한 걸 미리 알아차려요'],['C2','다른 사람을 위해 시간을 내요'],
+ ['C3','사람들을 믿는 편이에요'],['C3','다른 사람에게 도움이 되는 게 좋아요'],['C3','다른 사람의 필요에는 관심이 없어요',1],
+ ['C4','용서하고 잊으려고 해요'],['C4','원한을 오래 품는 편이에요',1],['C4','당한 만큼 앙갚음을 해요',1],
+ ['C5','양심에 따라 행동해요'],['C5','정의를 중요하게 생각해요'],['C5','목적을 위해서라면 수단은 상관없다고 생각해요',1],
+ ['ST1','무언가에 빠지면 시간 가는 줄 몰라요'],['ST1','상상력이 풍부한 편이에요'],['ST1','생각에 깊이 잠기는 일이 거의 없어요',1],
+ ['ST2','남들이 지나치는 것에서 아름다움을 발견해요'],['ST2','이유 없이 행복할 때가 있어요'],['ST2','사물의 깊은 의미를 찾는 일은 드물어요',1],
+ ['ST3','과학으로 설명되지 않는 일도 있을 수 있다고 생각해요'],['ST3','자연이나 세상과 깊이 이어져 있다고 느낄 때가 있어요'],['ST3','눈에 보이고 증명되는 것만 믿어요',1]
+
+].map(([sub,text,r],id)=>({id,sub,dim:sub.replace(/\d/g,''),text,r:!!r}));
+
+// 같은 차원이 연달아 나오지 않게 섞는다(고정 순서 — 매번 같은 검사가 되도록)
+const ORDER = (()=>{
+  let s=7; const rnd=()=>(s=(s*16807)%2147483647)/2147483647;
+  const a=ITEMS.map(i=>i.id); for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  for(let k=0;k<200;k++){let ok=true;for(let i=1;i<a.length;i++){if(ITEMS[a[i]].dim===ITEMS[a[i-1]].dim){const j=(i+3)%a.length;[a[i],a[j]]=[a[j],a[i]];ok=false;}}if(ok)break;}
+  return a;
+})();
+const CHOICES=['전혀 아니에요','아닌 편이에요','반반이에요','그런 편이에요','매우 그래요'];
+
+/* ───────── 해석 ───────── */
+const TEXT = {
+  NS:{hi:'새로운 경험에 쉽게 끌리고 결정이 빨라요. 지루함을 잘 못 견디고, 판이 바뀌는 상황에서 힘이 나요. 대신 충동적으로 정하고 나중에 후회하거나, 규칙이 많은 환경에서 답답함을 느끼기 쉬워요.',
+      mid:'새로움과 익숙함 사이에서 균형을 잡는 편이에요. 상황에 따라 모험도 하고, 필요하면 신중하게 따져봐요.',
+      lo:'익숙하고 검증된 방식을 좋아하고, 결정 전에 충분히 생각해요. 꾸준하고 절제력이 있어요. 대신 변화가 빠른 상황에서는 시작이 늦어지거나 재미를 덜 느낄 수 있어요.'},
+  HA:{hi:'위험을 먼저 알아차리고 미리 대비하는 편이에요. 실수가 적고 신중해요. 대신 걱정이 많아 쉽게 지치고, 낯선 일 앞에서 망설이는 시간이 길 수 있어요.',
+      mid:'조심할 땐 조심하고, 괜찮을 땐 과감해지는 편이에요. 걱정과 낙관이 적당히 섞여 있어요.',
+      lo:'걱정이 적고 낙관적이며 에너지가 넘쳐요. 낯선 사람·상황에서도 편안해요. 대신 위험 신호를 가볍게 넘기거나 준비를 덜 하고 뛰어들 수 있어요.'},
+  RD:{hi:'다른 사람의 감정과 반응에 민감하고, 관계에서 따뜻함과 인정을 중요하게 여겨요. 정이 많고 공감을 잘해요. 대신 남의 평가에 쉽게 흔들리거나 거절을 어려워할 수 있어요.',
+      mid:'사람들과 어울리는 것도, 혼자 있는 것도 괜찮은 편이에요. 관계에 적당히 마음을 쓰면서 내 판단도 지켜요.',
+      lo:'남의 반응보다 내 판단을 따르는 독립적인 편이에요. 감정에 덜 휘둘리고 객관적이에요. 대신 차갑거나 무심하다는 오해를 받을 수 있어요.'},
+  P:{hi:'칭찬이나 보상이 없어도 하던 일을 끝까지 해내요. 성실하고 목표를 향해 꾸준해요. 대신 그만둬야 할 때를 놓치거나 완벽을 좇다 지칠 수 있어요.',
+     mid:'필요한 만큼은 꾸준히 하지만, 의미가 없다고 느끼면 방향을 바꿀 줄도 알아요.',
+     lo:'당장 보상이 보이지 않으면 동력이 빨리 떨어지는 편이에요. 대신 아니다 싶을 때 미련 없이 방향을 바꾸는 유연함이 있어요.'},
+  SD:{hi:'내 삶의 목표가 분명하고, 그 목표에 맞게 행동을 조절해요. 결과를 내 책임으로 받아들이고 스스로를 믿어요. 어려운 상황에서도 흔들림이 적어요.',
+      mid:'대체로 내 삶을 스스로 이끌지만, 상황에 따라 방향이 흐려지거나 자신감이 줄 때가 있어요.',
+      lo:'요즘 목표가 흐릿하거나, 일이 잘 안 되면 상황 탓을 하게 될 때가 있어요. 자율성은 타고나는 게 아니라 자라는 힘이라 작은 성공 경험으로 키울 수 있어요.'},
+  C:{hi:'다른 사람을 너그럽게 받아들이고, 공감하고, 돕는 걸 좋아해요. 팀에서 신뢰받고 갈등을 부드럽게 풀어요.',
+     mid:'가까운 사람에게는 따뜻하지만, 나와 맞지 않는 사람에게는 거리를 두는 편이에요.',
+     lo:'사람보다 내 목표나 원칙을 앞세우는 편이에요. 독립적이지만, 협업에서 마찰이 생기거나 외롭다고 느낄 수 있어요.'},
+  ST:{hi:'무언가에 깊이 몰입하고, 나보다 큰 무엇(자연·공동체·의미)과 이어져 있다고 느껴요. 상상력과 직관이 풍부해요. 대신 현실적인 일을 놓칠 수 있어요.',
+      mid:'현실 감각과 열린 마음을 함께 가지고 있어요. 의미를 찾되 실용도 챙겨요.',
+      lo:'눈에 보이고 증명되는 것을 믿는 현실주의자예요. 실용적이고 비판적으로 생각해요. 대신 몰입이나 영감이 주는 즐거움을 덜 느낄 수 있어요.'}
+};
+// 기질 유형: 자극추구·위험회피·사회적 민감성 높낮이 조합 (Cloninger의 기질 8유형을 쉬운 말로)
+const TYPES = {
+  'HLL':['모험가형','새로운 걸 찾아 혼자서도 거침없이 나아가요. 결정이 빠르고 겁이 적어요.'],
+  'HLH':['분위기 메이커형','새로운 것과 사람을 모두 좋아해요. 어디서든 밝게 판을 키워요.'],
+  'HHH':['열정형','하고 싶은 것도, 걱정도, 마음 쓰는 사람도 많아요. 감정이 풍부하고 깊어요.'],
+  'HHL':['예민한 탐험가형','끌리는 건 많지만 걱정도 함께 따라와요. 변화 속에서 나만의 기준을 찾아요.'],
+  'LHL':['꼼꼼한 원칙형','신중하고 체계적이에요. 남의 말보다 검증된 방식을 믿어요.'],
+  'LHH':['신중한 배려형','조심스럽고 다정해요. 관계를 소중히 여기고 실수를 줄이려 애써요.'],
+  'LLL':['침착한 독립형','차분하고 걱정이 적어요. 흔들림 없이 내 속도로 가요.'],
+  'LLH':['다정한 안정형','편안하고 믿음직해요. 사람들 곁에서 조용히 힘이 되어 줘요.']
+};
+const TIPS = {
+  SD:['자율성 키우기','이번 주에 끝낼 수 있는 아주 작은 목표 하나를 정하고, 해낸 날을 기록해 보세요. 작은 성공이 쌓이면 스스로를 믿는 힘이 자라요.'],
+  C:['연대감 키우기','나와 생각이 다른 사람의 말을 하루 한 번, 끝까지 들어 보세요. 동의하지 않아도 이해하려는 연습만으로 관계가 달라져요.'],
+  ST:['자기초월 키우기','휴대폰 없이 20분 동안 걷거나 한 가지 일에만 몰두해 보세요. 몰입하는 시간이 마음에 여유를 만들어 줘요.'],
+  HA:['걱정 다루기','걱정이 들면 "최악·최선·가장 그럴듯한 결과"를 한 줄씩 적어 보세요. 막연한 불안이 구체적인 계획으로 바뀌어요.'],
+  NS:['충동 다루기','바로 하고 싶은 게 생기면 하루만 기다려 보세요. 다음 날에도 하고 싶다면 그때 해도 늦지 않아요.'],
+  P:['꾸준함 만들기','큰 목표를 10분짜리 단위로 쪼개 보세요. 시작이 쉬우면 끝까지 가기도 쉬워요.'],
+  RD:['나를 지키는 관계','부탁을 받으면 바로 답하지 말고 "생각해 보고 알려줄게"라고 말해 보세요. 거절도 관계를 지키는 방법이에요.']
+};
+
+/* ───────── 상태 ───────── */
+const KEY='tci7-v2';
+const store={get(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return{}}},set(v){localStorage.setItem(KEY,JSON.stringify(v))}};
+let S = Object.assign({answers:{},idx:0,history:[]}, store.get());
+const save=()=>store.set(S);
+const ui={dir:'fwd',navs:0,reveal:false,last:null,open:{}};
+
+function score(answers){
+  const subSum={},subN={};
+  ITEMS.forEach(it=>{const a=answers[it.id];if(a==null)return;const v=it.r?6-a:a;subSum[it.sub]=(subSum[it.sub]||0)+v;subN[it.sub]=(subN[it.sub]||0)+1;});
+  const pct=(sum,n)=>Math.round((sum/n-1)/4*100);
+  const dims={},subs={};
+  Object.keys(DIMS).forEach(d=>{let s=0,n=0;Object.keys(subSum).filter(k=>k.replace(/\d/g,'')===d).forEach(k=>{s+=subSum[k];n+=subN[k];subs[k]=pct(subSum[k],subN[k]);});dims[d]=n?pct(s,n):0;});
+  return {dims,subs};
+}
+const level=v=>v>=60?'hi':v<40?'lo':'mid';
+const LV={hi:'높음',mid:'보통',lo:'낮음'};
+function typeOf(d){const k=(d.NS>=50?'H':'L')+(d.HA>=50?'H':'L')+(d.RD>=50?'H':'L');return TYPES[k];}
+function characterLine(d){
+  const sd=d.SD>=50,c=d.C>=50;
+  if(sd&&c) return '스스로를 이끄는 힘과 함께하는 힘이 모두 잘 자라 있어요. 기질의 장점을 살리기 좋은 상태예요.';
+  if(sd) return '스스로를 이끄는 힘은 단단해요. 함께하는 힘을 조금 더 키우면 기질의 장점이 더 잘 드러나요.';
+  if(c) return '다른 사람과 함께하는 힘이 좋아요. 나만의 목표와 기준을 조금 더 세우면 훨씬 단단해져요.';
+  return '요즘 나를 이끄는 힘과 함께하는 힘이 조금 지쳐 있어요. 성격은 경험으로 자라니 작은 것부터 시작해 보세요.';
+}
+// 공유 링크: 7개 점수만 담는다(답변 원본은 담지 않음)
+const encode=d=>Object.keys(DIMS).map(k=>d[k].toString(36).padStart(2,'0')).join('');
+function decode(s){if(!/^[0-9a-z]{14}$/.test(s||''))return null;const o={};Object.keys(DIMS).forEach((k,i)=>{o[k]=Math.min(100,parseInt(s.slice(i*2,i*2+2),36));});return o;}
+
+/* ───────── 라우터 ───────── */
+const $app=document.getElementById('app');
+function go(path){ui.dir='fwd';ui.navs++;location.hash=path;}
+function goBack(fb){ui.dir='back';if(ui.navs>0){ui.navs--;history.back();}else{history.replaceState(null,'','#'+fb);render();}}
+addEventListener('hashchange',()=>{if(!ui.dir)ui.dir='back';render();});
+function route(){const h=location.hash.slice(1)||'/';const [p,q]=h.split('?');return {p,q:new URLSearchParams(q||'')};}
+
+function render(){
+  const {p,q}=route();
+  const changed=ui.last!==location.hash; ui.last=location.hash;
+  let html='';
+  if(p==='/q') html=Question();
+  else if(p==='/result') html=Result(q);
+  else html=Landing();
+  $app.innerHTML=`<div class="scr ${changed?ui.dir:''}">${html}</div>`;
+  if(changed) scrollTo(0,0);
+  ui.dir=null;
+  bind();
+  if(ui.reveal){requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.bar>i[data-w]').forEach(b=>b.style.width=b.dataset.w+'%')));ui.reveal=false;}
+  else document.querySelectorAll('.bar>i[data-w]').forEach(b=>{b.style.transition='none';b.style.width=b.dataset.w+'%';});
+}
+
+/* ───────── 화면 ───────── */
+const ICON={
+  back:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  chev:'<svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B95A1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'
+};
+function heroArt(){
+  // 7개 원: 기질 4(채움) + 성격 3(테두리)
+  return `<svg height="80%" viewBox="0 0 240 240" aria-hidden="true">
+    <circle cx="120" cy="120" r="96" fill="none" stroke="#E5E8EB" stroke-width="1.5" stroke-dasharray="4 6"/>
+    <circle cx="120" cy="120" r="56" fill="none" stroke="#E5E8EB" stroke-width="1.5"/>
+    ${[0,1,2,3].map(i=>{const a=(i*90-45)*Math.PI/180;return `<circle cx="${120+56*Math.cos(a)}" cy="${120+56*Math.sin(a)}" r="18" fill="${['#4B5BD6','#6E5BD0','#8C6BC9','#B0B8C1'][i]}"/>`}).join('')}
+    ${[0,1,2].map(i=>{const a=(i*120-90)*Math.PI/180;return `<circle cx="${120+96*Math.cos(a)}" cy="${120+96*Math.sin(a)}" r="14" fill="#fff" stroke="#4B5BD6" stroke-width="3"/>`}).join('')}
+    <circle cx="120" cy="120" r="10" fill="#191F28"/>
+  </svg>`;
+}
+function Landing(){
+  const done=Object.keys(S.answers).length;
+  const inProgress=done>0&&done<ITEMS.length;
+  const last=S.history[0];
+  return `<main class="has-cta">
+    <div style="height:32px"></div>
+    <h1 class="title1" tabindex="-1">타고난 기질과 자라온 성격,<br>7가지로 알아봐요</h1>
+    <p class="body1 sub" style="margin-top:8px">평소 나와 얼마나 비슷한지만 고르면 돼요</p>
+    <div class="facts"><span class="chip">87문항</span><span class="chip">약 8분</span><span class="chip">가입 없이 무료</span></div>
+    <div class="hero-art">${heroArt()}</div>
+    <h2 class="title2">이런 걸 알 수 있어요</h2>
+    <div class="list">
+      <div class="row"><div class="dot">4</div><div><b class="body1" style="font-weight:600">타고난 기질</b><p class="body2 sub">자극추구 · 위험회피 · 사회적 민감성 · 인내력. 잘 바뀌지 않는 나의 기본값이에요.</p></div></div>
+      <div class="row"><div class="dot">3</div><div><b class="body1" style="font-weight:600">자라온 성격</b><p class="body2 sub">자율성 · 연대감 · 자기초월. 경험으로 자라는 힘이라 키울 수 있어요.</p></div></div>
+      <div class="row"><div class="dot">8</div><div><b class="body1" style="font-weight:600">기질 유형</b><p class="body2 sub">세 기질의 높낮이 조합으로 8가지 유형 중 내 유형을 알려드려요.</p></div></div>
+    </div>
+    ${last?`<button class="dim-head" data-act="last" style="margin-top:32px;background:var(--grey-50)">
+      <div class="dim-top"><span class="body2 sub">지난 결과 · ${new Date(last.at).toLocaleDateString('ko-KR',{month:'long',day:'numeric'})}</span><span class="body2" style="font-weight:600;color:var(--primary)">다시 보기</span></div>
+      <div class="dim-name" style="margin-top:2px">${typeOf(last.dims)[0]}</div></button>`:''}
+  </main>
+  <div class="cta">
+    ${inProgress?`<button class="text-btn" data-act="restart">처음부터 다시 하기</button>`:''}
+    <button class="btn" data-act="start">${inProgress?`이어서 하기 (${done}/${ITEMS.length})`:'검사 시작하기'}</button>
+    <p class="note">공식 TCI가 아닌 자가 점검용 검사예요</p>
+  </div>`;
+}
+function Question(){
+  const i=Math.min(S.idx,ITEMS.length-1);
+  const it=ITEMS[ORDER[i]];
+  const cur=S.answers[it.id];
+  return `<div class="appbar"><button class="icon-btn" data-act="qback" aria-label="이전 문항">${ICON.back}</button>
+      <span class="caption weak num" style="margin-left:4px">${i+1} / ${ITEMS.length}</span>
+      <button class="right" data-act="home">나중에 하기</button></div>
+    <div class="progress"><i style="width:${i/ITEMS.length*100}%"></i></div>
+    <main class="q-wrap">
+      <p class="q-label">평소 나와 얼마나 비슷한가요?</p>
+      <h1 class="title1 statement ${ui.stDir||''}" tabindex="-1">${it.text}</h1>
+      <div class="choices">${CHOICES.map((c,k)=>`<button class="choice" data-a="${k+1}" aria-pressed="${cur===k+1}">${c}<span>${k+1}</span></button>`).join('')}</div>
+    </main>`;
+}
+function Result(q){
+  const shared=decode(q.get('s'));
+  let dims,subs=null,isShared=false;
+  if(shared&&!(S.history[0]&&encode(S.history[0].dims)===q.get('s'))){dims=shared;isShared=true;}
+  else if(S.history[0]){dims=S.history[0].dims;subs=S.history[0].subs;}
+  else return Landing();
+  const [tname,tdesc]=typeOf(dims);
+  const ax=k=>`${DIMS[k].name} ${dims[k]>=50?'높은 편':'낮은 편'}`;
+  const block=g=>Object.keys(DIMS).filter(k=>DIMS[k].group===g).map(k=>{
+    const v=dims[k],lv=level(v),open=ui.open[k];
+    const subRows=subs&&Object.keys(DIMS[k].subs).length?`<div class="subs">${Object.entries(DIMS[k].subs).map(([sk,sn])=>`<div class="sub-row"><span>${sn}</span><div class="bar"><i data-w="${subs[sk]}"></i></div><b class="num">${subs[sk]}</b></div>`).join('')}</div>`:'';
+    return `<div class="dim ${open?'open':''}" data-dim="${k}">
+      <button class="dim-head" data-act="toggle" data-k="${k}" aria-expanded="${!!open}">
+        <div class="dim-top"><span class="dim-name">${DIMS[k].name}</span><span style="display:flex;align-items:center;gap:4px"><span class="dim-score num">${v}<span class="lvl ${lv}">${LV[lv]}</span></span>${ICON.chev}</span></div>
+        <div class="bar"><i data-w="${v}"></i></div>
+        <div class="bar-legend"><span>${DIMS[k].plain}</span></div>
+      </button>
+      <div class="dim-body"><p>${TEXT[k][lv]}</p>${subRows}</div>
+    </div>`;}).join('');
+  // 성장 팁: 성격 중 가장 낮은 것 1개 + 기질 중 극단(위험회피 높음/자극추구 높음/인내력 낮음/사회적 민감성 높음) 1개
+  const ch=['SD','C','ST'].sort((a,b)=>dims[a]-dims[b])[0];
+  const tempCand=[['HA',dims.HA],['NS',dims.NS],['P',100-dims.P],['RD',dims.RD]].sort((a,b)=>b[1]-a[1])[0];
+  const tips=[TIPS[ch]].concat(tempCand[1]>=60?[TIPS[tempCand[0]]]:[]);
+  return `<div class="appbar"><button class="icon-btn" data-act="home" aria-label="처음으로">${ICON.back}</button></div>
+  <main class="has-cta">
+    <p class="body2 sub">${isShared?'친구가 공유한 결과예요':'8가지 기질 유형 중 나는'}</p>
+    <div class="type-card ${ui.revealCard?'reveal':''}">
+      <div class="tag">기질 유형</div>
+      <h1 class="display" tabindex="-1">${tname}</h1>
+      <p class="body2">${tdesc}</p>
+      <div class="axes"><b>${ax('NS')}</b><b>${ax('HA')}</b><b>${ax('RD')}</b></div>
+    </div>
+    <p class="body1" style="margin-top:20px">${characterLine(dims)}</p>
+
+    <section class="section"><h2 class="title2">타고난 기질</h2><p class="caption sub">잘 바뀌지 않는 나의 기본값이에요. 눌러서 자세히 볼 수 있어요.</p><div class="dims">${block('기질')}</div></section>
+    <section class="section"><h2 class="title2">자라온 성격</h2><p class="caption sub">경험과 노력으로 자라는 힘이에요.</p><div class="dims">${block('성격')}</div></section>
+    ${isShared?'':`<section class="section"><h2 class="title2">이번 주에 해볼 것</h2><div class="tips">${tips.map(([t,d])=>`<div class="tip"><b>${t}</b><p>${d}</p></div>`).join('')}</div></section>`}
+
+    <div class="disclaimer">점수는 0~100으로, 내 응답을 비율로 바꾼 값이에요. 다른 사람과 비교한 순위(규준 점수)가 아니에요.<br><br>
+    문항은 공개 문항 모음 IPIP의 TCI 대응 척도에서 골라 번역했어요(열린 믿음 3문항만 자체 문항). 원 척도를 줄인 버전이라 정확도는 원본보다 낮을 수 있어요. 공식 TCI 검사나 진단을 대신하지 않아요. 정확한 해석이 필요하면 전문 기관의 공식 검사를 받아 보세요.</div>
+    ${isShared?'':`<button class="text-btn" data-act="retake" style="width:100%;margin-top:16px">처음부터 다시 하기</button>`}
+  </main>
+  <div class="cta">${isShared?`<button class="btn" data-act="mine">나도 검사하기</button><p class="note">87문항 · 약 8분 · 가입 없이 무료</p>`:`<button class="btn" data-act="share">결과 공유하기</button>`}</div>`;
+}
+
+/* ───────── 동작 ───────── */
+let answering=false;
+function bind(){
+  ui.revealCard=false;ui.stDir=null;
+  $app.querySelectorAll('[data-act]').forEach(el=>el.addEventListener('click',()=>act(el.dataset.act,el)));
+  $app.querySelectorAll('.choice').forEach(el=>el.addEventListener('click',()=>pick(el)));
+}
+function act(a,el){
+  if(a==='start'){if(Object.keys(S.answers).length>=ITEMS.length){S.answers={};S.idx=0;save();}go('/q');}
+  else if(a==='restart'){S.answers={};S.idx=0;save();go('/q');}
+  else if(a==='home'){goBack('/');}
+  else if(a==='last'){go('/result');}
+  else if(a==='mine'){S.answers={};S.idx=0;save();history.replaceState(null,'','#/');ui.last=null;go('/q');}
+  else if(a==='qback'){if(S.idx===0)return goBack('/');S.idx--;save();ui.stDir='enter-back';rerenderQ();}
+  else if(a==='toggle'){const k=el.dataset.k;ui.open[k]=!ui.open[k];const d=el.closest('.dim');d.classList.toggle('open');el.setAttribute('aria-expanded',ui.open[k]);
+    d.querySelectorAll('.sub-row .bar>i').forEach(b=>b.style.width=b.dataset.w+'%');}
+  else if(a==='retake'){openSheet();}
+  else if(a==='share'){share();}
+}
+function rerenderQ(){
+  const html=Question();const tmp=document.createElement('div');tmp.innerHTML=html;
+  const scr=$app.firstElementChild;scr.className='scr';scr.innerHTML=tmp.innerHTML;bind();
+}
+function pick(el){
+  if(answering)return;answering=true;
+  navigator.vibrate?.(8);
+  $app.querySelectorAll('.choice').forEach(b=>b.setAttribute('aria-pressed',String(b===el)));
+  const it=ITEMS[ORDER[S.idx]];S.answers[it.id]=+el.dataset.a;
+  const wait=matchMedia('(prefers-reduced-motion: reduce)').matches?0:250;
+  setTimeout(()=>{
+    answering=false;
+    if(S.idx<ITEMS.length-1){S.idx++;save();ui.stDir='enter';rerenderQ();}
+    else{
+      const r=score(S.answers);
+      S.history=[{at:Date.now(),...r},...S.history].slice(0,5);S.answers={};S.idx=0;save();
+      ui.reveal=true;ui.revealCard=true;ui.open={};
+      ui.dir='fwd';history.replaceState(null,'','#/result');ui.last=null;render();
+    }
+  },wait);
+}
+document.addEventListener('keydown',e=>{
+  if(route().p!=='/q')return;
+  if(/^[1-5]$/.test(e.key))$app.querySelector(`.choice[data-a="${e.key}"]`)?.click();
+  if(e.key==='Backspace')act('qback');
+});
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2000);}
+async function share(){
+  const d=S.history[0].dims;const [t]=typeOf(d);
+  const url=location.href.split('#')[0]+'#/result?s='+encode(d);
+  const text=`나는 '${t}'래요. 기질·성격 7가지 결과 보고 너도 해봐요`;
+  if(navigator.share&&matchMedia('(pointer:coarse)').matches){try{await navigator.share({title:'기질·성격 7요인 검사',text,url});}catch(e){} return;}
+  try{await navigator.clipboard.writeText(text+'\n'+url);toast('링크를 복사했어요');}catch{prompt('이 링크를 복사해 주세요',url);}
+}
+function openSheet(){
+  const bg=document.createElement('div');bg.className='sheet-bg';
+  const sh=document.createElement('div');sh.className='sheet';sh.setAttribute('role','dialog');
+  sh.innerHTML=`<div class="handle"></div><h2 class="title2">처음부터 다시 할까요?</h2><p class="body2 sub" style="margin-top:4px">지금 결과는 첫 화면 '지난 결과'에 남아 있어요.</p>
+    <div class="btns"><button class="btn secondary" data-x="no">닫기</button><button class="btn" data-x="yes">다시 하기</button></div>`;
+  document.body.append(bg,sh);requestAnimationFrame(()=>{bg.classList.add('show');sh.classList.add('show');});
+  const close=()=>{bg.classList.remove('show');sh.classList.remove('show');setTimeout(()=>{bg.remove();sh.remove();},220);};
+  bg.onclick=close;sh.querySelector('[data-x=no]').onclick=close;
+  sh.querySelector('[data-x=yes]').onclick=()=>{close();S.answers={};S.idx=0;save();go('/q');};
+}
+render();
+</script>
+</body>
+</html>
